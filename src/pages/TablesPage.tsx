@@ -171,17 +171,6 @@ const TablesPage: React.FC = () => {
     <div className="h-full w-full bg-gray-100 flex">
       {/* 左侧区域选择 */}
       <div className="w-48 bg-white flex flex-col">
-        {/* 返回按钮 */}
-        <div className="p-4 border-b border-gray-200">
-          <button
-            onClick={goBack}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            <span>返回</span>
-          </button>
-        </div>
-
         {/* 区域列表 */}
         <div className="flex-1">
           {restaurantAreas.map((area) => (
