@@ -1,42 +1,38 @@
 import React from 'react'
-import { ChefHat, Utensils, Building2 } from 'lucide-react'
 
-interface CategoryItem {
+interface RestaurantItem {
   id: string
   name: string
-  icon: React.ReactNode
   description: string
   color: string
 }
 
 const CategoryPage: React.FC = () => {
-  const categories: CategoryItem[] = [
+  // 可配置的餐厅列表
+  const restaurants: RestaurantItem[] = [
     {
-      id: 'chinese',
-      name: '中餐',
-      icon: <ChefHat className="w-8 h-8" />,
+      id: 'chinese-restaurant',
+      name: '中餐厅',
       description: '传统中式菜肴',
       color: 'from-red-500 to-orange-500'
     },
     {
-      id: 'western',
-      name: '西餐',
-      icon: <Utensils className="w-8 h-8" />,
+      id: 'western-restaurant',
+      name: '西餐厅',
       description: '精致西式料理',
       color: 'from-blue-500 to-purple-500'
     },
     {
-      id: 'hotel',
-      name: '酒店',
-      icon: <Building2 className="w-8 h-8" />,
+      id: 'hotel-restaurant',
+      name: '酒店餐厅',
       description: '酒店特色服务',
       color: 'from-green-500 to-teal-500'
     }
   ]
 
-  const handleCategoryClick = (categoryId: string) => {
-    console.log(`Selected category: ${categoryId}`)
-    // 这里可以添加导航到具体菜单页面的逻辑
+  const handleRestaurantClick = (restaurantId: string) => {
+    console.log(`Selected restaurant: ${restaurantId}`)
+    // 这里可以添加导航到具体餐厅菜单页面的逻辑
   }
 
   return (
@@ -50,39 +46,36 @@ const CategoryPage: React.FC = () => {
           {/* 标题区域 */}
           <div className="text-center mb-16 animate-fade-in">
             <h1 className="text-4xl font-bold text-white mb-4">
-              请选择菜单类别
+              请选择餐厅
             </h1>
             <p className="text-white/80 text-lg">
               为您提供多样化的用餐选择
             </p>
           </div>
 
-          {/* 分类按钮 */}
+          {/* 餐厅列表 */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-3xl mx-auto">
-            {categories.map((category, index) => (
+            {restaurants.map((restaurant, index) => (
               <div
-                key={category.id}
+                key={restaurant.id}
                 className="animate-slide-up"
                 style={{ animationDelay: `${index * 0.2}s` }}
               >
                 <button
-                  onClick={() => handleCategoryClick(category.id)}
+                  onClick={() => handleRestaurantClick(restaurant.id)}
                   className="group w-full h-32 glass-effect rounded-2xl p-6 hover:scale-105 transform transition-all duration-300 hover:shadow-2xl cursor-pointer"
                 >
                   <div className="flex flex-col items-center justify-center h-full">
-                    <div className={`mb-3 p-3 rounded-full bg-gradient-to-r ${category.color} text-white group-hover:scale-110 transition-transform duration-300`}>
-                      {category.icon}
-                    </div>
-                    <h3 className="text-xl font-bold text-gray-800 mb-1">
-                      {category.name}
+                    <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                      {restaurant.name}
                     </h3>
                     <p className="text-gray-600 text-sm text-center">
-                      {category.description}
+                      {restaurant.description}
                     </p>
                   </div>
                   
                   {/* 悬停效果 */}
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500/0 to-orange-500/0 group-hover:from-orange-500/10 group-hover:to-red-500/10 transition-all duration-300" />
+                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent to-transparent group-hover:${restaurant.color.replace('from-', 'from-').replace('to-', 'to-')} group-hover:opacity-10 transition-all duration-300`} />
                 </button>
               </div>
             ))}
@@ -91,7 +84,7 @@ const CategoryPage: React.FC = () => {
           {/* 底部提示 */}
           <div className="text-center mt-16 animate-fade-in" style={{ animationDelay: '0.8s' }}>
             <p className="text-white/60 text-sm">
-              点击上方按钮选择您需要的菜单类别
+              点击上方按钮选择您需要用餐的餐厅
             </p>
           </div>
         </div>
