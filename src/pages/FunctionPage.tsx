@@ -1,5 +1,5 @@
 import React from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronUp, ChevronDown } from 'lucide-react'
 
 interface FunctionItem {
   id: string
@@ -54,17 +54,17 @@ const FunctionPage: React.FC = () => {
     // 这里可以添加导航到具体功能页面的逻辑
   }
 
-  const scrollLeft = () => {
+  const scrollUp = () => {
     const container = document.getElementById('functions-container')
     if (container) {
-      container.scrollBy({ left: -300, behavior: 'smooth' })
+      container.scrollBy({ top: -200, behavior: 'smooth' })
     }
   }
 
-  const scrollRight = () => {
+  const scrollDown = () => {
     const container = document.getElementById('functions-container')
     if (container) {
-      container.scrollBy({ left: 300, behavior: 'smooth' })
+      container.scrollBy({ top: 200, behavior: 'smooth' })
     }
   }
 
@@ -76,7 +76,7 @@ const FunctionPage: React.FC = () => {
       {/* 主要内容 */}
       <div className="relative z-20 h-full flex flex-col p-8">
         {/* 标题区域 */}
-        <div className="text-center mb-12 animate-fade-in">
+        <div className="text-center mb-8 animate-fade-in">
           <h1 className="text-4xl font-bold text-white mb-4">
             功能选择
           </h1>
@@ -86,30 +86,29 @@ const FunctionPage: React.FC = () => {
         </div>
 
         {/* 功能模块容器 */}
-        <div className="flex-1 flex items-center justify-center relative">
-          {/* 左滑动按钮 */}
+        <div className="flex-1 flex items-center justify-center relative max-w-4xl mx-auto w-full">
+          {/* 上滚动按钮 */}
           <button
-            onClick={scrollLeft}
-            className="absolute left-0 z-30 w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 transition-all duration-300 flex items-center justify-center"
+            onClick={scrollUp}
+            className="absolute top-0 left-1/2 transform -translate-x-1/2 z-30 w-12 h-8 rounded-b-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 transition-all duration-300 flex items-center justify-center"
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronUp className="w-5 h-5" />
           </button>
 
-          {/* 功能模块列表 */}
+          {/* 功能模块网格 */}
           <div
             id="functions-container"
-            className="flex gap-6 overflow-x-auto scrollbar-hide px-16 py-8"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            className="grid grid-cols-2 gap-6 overflow-y-auto scrollbar-hide max-h-full py-12 px-4"
           >
             {functions.map((func, index) => (
               <div
                 key={func.id}
-                className="flex-shrink-0 animate-slide-up"
+                className="animate-slide-up"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <button
                   onClick={() => handleFunctionClick(func.id)}
-                  className="group relative w-80 h-60 rounded-2xl overflow-hidden shadow-2xl hover:scale-105 transform transition-all duration-300 cursor-pointer"
+                  className="group relative w-full h-48 rounded-2xl overflow-hidden shadow-2xl hover:scale-105 transform transition-all duration-300 cursor-pointer"
                 >
                   {/* 背景图片 */}
                   <div
@@ -137,19 +136,19 @@ const FunctionPage: React.FC = () => {
             ))}
           </div>
 
-          {/* 右滑动按钮 */}
+          {/* 下滚动按钮 */}
           <button
-            onClick={scrollRight}
-            className="absolute right-0 z-30 w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 transition-all duration-300 flex items-center justify-center"
+            onClick={scrollDown}
+            className="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-30 w-12 h-8 rounded-t-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 transition-all duration-300 flex items-center justify-center"
           >
-            <ChevronRight className="w-6 h-6" />
+            <ChevronDown className="w-5 h-5" />
           </button>
         </div>
 
         {/* 底部提示 */}
-        <div className="text-center animate-fade-in" style={{ animationDelay: '0.8s' }}>
+        <div className="text-center mt-4 animate-fade-in" style={{ animationDelay: '0.8s' }}>
           <p className="text-white/60 text-sm">
-            点击功能模块进入相应操作界面，可左右滑动查看更多功能
+            点击功能模块进入相应操作界面，可上下滑动查看更多功能
           </p>
         </div>
       </div>
