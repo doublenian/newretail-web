@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage'
 import WelcomePage from './pages/WelcomePage'
 import CategoryPage from './pages/CategoryPage'
 import FunctionPage from './pages/FunctionPage'
+import TablesPage from './pages/TablesPage'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/welcome" element={<WelcomePage />} />
         <Route path="/category" element={<CategoryPage />} />
         <Route path="/function/:restaurantId" element={<FunctionPage />} />
+        <Route path="/tables" element={<TablesPage />} />
       </Routes>
     </div>
   )

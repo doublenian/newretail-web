@@ -1,4 +1,5 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface FunctionItem {
@@ -9,6 +10,8 @@ interface FunctionItem {
 }
 
 const FunctionPage: React.FC = () => {
+  const navigate = useNavigate()
+
   // 7个功能模块（新增打印功能）
   const functions: FunctionItem[] = [
     {
@@ -57,7 +60,10 @@ const FunctionPage: React.FC = () => {
 
   const handleFunctionClick = (functionId: string) => {
     console.log(`Selected function: ${functionId}`)
-    // 这里可以添加导航到具体功能页面的逻辑
+    if (functionId === 'tables') {
+      navigate('/tables')
+    }
+    // 这里可以添加导航到其他功能页面的逻辑
   }
 
   const scrollLeft = () => {
