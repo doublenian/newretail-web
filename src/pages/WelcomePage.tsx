@@ -42,10 +42,10 @@ const WelcomePage: React.FC = () => {
           </div>
 
           {/* 继续按钮 */}
-          <div className="mt-16">
+          <div className="mt-16 flex justify-center">
             <button
               onClick={handleContinue}
-              className="floating glass-dark rounded-full w-48 h-48 flex flex-col items-center justify-center text-white hover:bg-white/20 transition-all duration-300 cursor-pointer group"
+              className="floating glass-dark rounded-full w-48 h-48 flex flex-col items-center justify-center text-white hover:bg-white/20 transition-all duration-300 cursor-pointer group relative"
             >
               <div className="text-center">
                 <div className="text-lg font-medium mb-2 group-hover:scale-110 transition-transform duration-300">
