@@ -13,19 +13,19 @@ const CategoryPage: React.FC = () => {
     {
       id: 'chinese-restaurant',
       name: '中餐厅',
-      description: '传统中式菜肴',
+      description: '',
       color: 'from-red-500 to-orange-500'
     },
     {
       id: 'western-restaurant',
       name: '西餐厅',
-      description: '精致西式料理',
+      description: '',
       color: 'from-blue-500 to-purple-500'
     },
     {
       id: 'hotel-restaurant',
       name: '酒店餐厅',
-      description: '酒店特色服务',
+      description: '',
       color: 'from-green-500 to-teal-500'
     }
   ]
