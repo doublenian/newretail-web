@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Clock, Users, ArrowLeft } from 'lucide-react'
+import { Clock, Users, ArrowLeft, MapPin } from 'lucide-react'
 
 interface TableStatus {
   id: string
@@ -170,37 +170,81 @@ const TablesPage: React.FC = () => {
   return (
     <div className="h-full w-full bg-gray-100 flex">
       {/* 左侧区域选择 */}
-      <div className="w-48 bg-white flex flex-col">
+      <div className="w-64 bg-gradient-to-b from-gray-800 to-gray-900 flex flex-col shadow-2xl">
+        {/* 头部标题 */}
+        <div className="p-6 border-b border-gray-700">
+          <h2 className="text-white text-xl font-bold flex items-center gap-3">
+            <MapPin className="w-6 h-6 text-orange-400" />
+            餐厅区域
+          </h2>
+          <p className="text-gray-400 text-sm mt-1">选择要管理的区域</p>
+        </div>
+
         {/* 区域列表 */}
-        <div className="flex-1">
-          {restaurantAreas.map((area) => (
+        <div className="flex-1 p-4 space-y-3">
+          {restaurantAreas.map((area, index) => (
             <button
               key={area.id}
               onClick={() => setSelectedArea(area.id)}
-              className={`w-full text-left p-4 border-b border-gray-200 transition-colors ${
+              className={`group relative w-full text-left p-4 rounded-xl transition-all duration-300 transform hover:scale-105 ${
                 selectedArea === area.id
-                  ? 'bg-orange-500 text-white border-l-4 border-l-orange-600'
-                  : 'text-gray-700 hover:bg-gray-50'
+                  ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/30'
+                  : 'bg-gray-700/50 text-gray-300 hover:bg-gray-700 hover:text-white'
               }`}
+              style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <span className="text-lg font-medium">{area.name}</span>
+              {/* 选中状态指示器 */}
+              {selectedArea === area.id && (
+                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-white rounded-r-full" />
+              )}
+              
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-lg font-semibold block">{area.name}</span>
+                  <span className={`text-sm ${
+                    selectedArea === area.id ? 'text-white/80' : 'text-gray-400'
+                  }`}>
+                    {area.tables.length} 个桌台
+                  </span>
+                </div>
+                
+                {/* 桌台数量标识 */}
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                  selectedArea === area.id
+                    ? 'bg-white/20 text-white'
+                    : 'bg-orange-500 text-white'
+                }`}>
+                  {area.tables.length}
+                </div>
+              </div>
+              
+              {/* 悬停效果 */}
+              <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </button>
           ))}
+        </div>
+
+        {/* 底部装饰 */}
+        <div className="p-4 border-t border-gray-700">
+          <div className="text-center">
+            <div className="w-12 h-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-full mx-auto mb-2" />
+            <p className="text-gray-400 text-xs">桌台管理系统</p>
+          </div>
         </div>
       </div>
 
       {/* 右侧内容区域 */}
       <div className="flex-1 flex flex-col">
         {/* 顶部桌台类型筛选 */}
-        <div className="bg-white p-6 border-b border-gray-200">
+        <div className="bg-white p-6 border-b border-gray-200 shadow-sm">
           <div className="flex gap-4">
             {tableTypes.map((type) => (
               <button
                 key={type.id}
                 onClick={() => setSelectedType(type.id)}
-                className={`px-6 py-2 rounded-full font-medium transition-colors ${
+                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105 ${
                   selectedType === type.id
-                    ? 'bg-red-400 text-white'
+                    ? 'bg-gradient-to-r from-red-400 to-red-500 text-white shadow-lg shadow-red-400/30'
                     : 'bg-gray-400 text-white hover:bg-gray-500'
                 }`}
               >
@@ -211,44 +255,51 @@ const TablesPage: React.FC = () => {
         </div>
 
         {/* 桌台网格 */}
-        <div className="flex-1 p-6">
+        <div className="flex-1 p-6 bg-gray-50">
           <div className="grid grid-cols-4 gap-6">
-            {getFilteredTables().map((table) => {
+            {getFilteredTables().map((table, index) => {
               const config = getStatusConfig(table.status)
               return (
-                <div key={table.id} className="w-full">
+                <div 
+                  key={table.id} 
+                  className="w-full animate-slide-up"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
                   <button
                     onClick={() => handleTableClick(table)}
-                    className="w-full bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer overflow-hidden"
+                    className="group w-full bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden transform hover:scale-105"
                   >
                     {/* 桌台号码头部 */}
-                    <div className={`${config.bgColor} text-white p-4 text-center`}>
+                    <div className={`${config.bgColor} text-white p-4 text-center relative`}>
                       <div className="text-2xl font-bold">{table.number}</div>
+                      {/* 装饰性渐变 */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                     </div>
                     
                     {/* 状态信息区域 */}
-                    <div className="p-4 bg-gray-50">
+                    <div className="p-4 bg-gradient-to-b from-gray-50 to-white">
                       <div className="text-center mb-2">
                         <span className="text-gray-700 font-medium">{config.statusText}</span>
                       </div>
                       
                       {/* 详细信息 */}
                       {table.duration && (
-                        <div className="text-center text-sm text-gray-600 mb-2">
+                        <div className="text-center text-sm text-gray-600 mb-2 flex items-center justify-center gap-1">
+                          <Clock className="w-3 h-3" />
                           {table.duration}
                         </div>
                       )}
                       
                       {table.customerCount && (
-                        <div className="flex items-center justify-center gap-1 text-sm text-gray-600">
+                        <div className="flex items-center justify-center gap-1 text-sm text-gray-600 mb-3">
                           <Users className="w-4 h-4" />
                           <span>{table.customerCount}人</span>
                         </div>
                       )}
                       
                       {/* 底部装饰图标 */}
-                      <div className="flex justify-center mt-3">
-                        <div className="w-8 h-8 bg-orange-400 transform rotate-45 rounded-sm"></div>
+                      <div className="flex justify-center">
+                        <div className="w-8 h-8 bg-gradient-to-r from-orange-400 to-red-400 transform rotate-45 rounded-sm group-hover:rotate-90 transition-transform duration-300" />
                       </div>
                     </div>
                   </button>
@@ -259,22 +310,22 @@ const TablesPage: React.FC = () => {
         </div>
 
         {/* 底部状态说明 */}
-        <div className="bg-white p-6 border-t border-gray-200">
+        <div className="bg-white p-6 border-t border-gray-200 shadow-lg">
           <div className="flex items-center gap-8">
             <span className="text-gray-700 font-medium">状态：</span>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-purple-500 rounded"></div>
+              <div className="w-4 h-4 bg-purple-500 rounded shadow-sm" />
               <span className="text-gray-600">未开台</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-blue-500 rounded"></div>
+              <div className="w-4 h-4 bg-blue-500 rounded shadow-sm" />
               <span className="text-gray-600">已开台</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-500 rounded"></div>
+              <div className="w-4 h-4 bg-green-500 rounded shadow-sm" />
               <span className="text-gray-600">就餐中</span>
             </div>
-            <button className="ml-auto px-6 py-2 bg-orange-400 text-white rounded-full font-medium hover:bg-orange-500 transition-colors">
+            <button className="ml-auto px-6 py-3 bg-gradient-to-r from-orange-400 to-red-400 text-white rounded-full font-medium hover:from-orange-500 hover:to-red-500 transition-all duration-300 transform hover:scale-105 shadow-lg">
               刷新
             </button>
           </div>
