@@ -3,7 +3,6 @@ import React from 'react'
 interface RestaurantItem {
   id: string
   name: string
-  description: string
   color: string
 }
 
@@ -13,19 +12,16 @@ const CategoryPage: React.FC = () => {
     {
       id: 'chinese-restaurant',
       name: '中餐厅',
-      description: '',
       color: 'from-red-500 to-orange-500'
     },
     {
       id: 'western-restaurant',
       name: '西餐厅',
-      description: '',
       color: 'from-blue-500 to-purple-500'
     },
     {
       id: 'hotel-restaurant',
       name: '酒店餐厅',
-      description: '',
       color: 'from-green-500 to-teal-500'
     }
   ]
@@ -69,9 +65,6 @@ const CategoryPage: React.FC = () => {
                     <h3 className="text-2xl font-bold text-gray-800 mb-2">
                       {restaurant.name}
                     </h3>
-                    <p className="text-gray-600 text-sm text-center">
-                      {restaurant.description}
-                    </p>
                   </div>
                   
                   {/* 悬停效果 */}
