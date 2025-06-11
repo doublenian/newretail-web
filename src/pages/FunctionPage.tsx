@@ -117,21 +117,24 @@ const FunctionPage: React.FC = () => {
                   {chunk.map((func, index) => (
                     <div
                       key={func.id}
-                      className="animate-slide-up"
+                      className="animate-slide-up p-2"
                       style={{ animationDelay: `${index * 0.1}s` }}
                     >
                       <button
                         onClick={() => handleFunctionClick(func.id)}
-                        className="group relative w-full h-48 rounded-2xl overflow-hidden shadow-2xl hover:scale-105 transform transition-all duration-300 cursor-pointer"
+                        className="group relative w-full h-48 rounded-2xl shadow-2xl hover:scale-105 transform transition-all duration-300 cursor-pointer"
                       >
-                        {/* 背景图片 */}
-                        <div
-                          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                          style={{ backgroundImage: `url(${func.backgroundImage})` }}
-                        />
-                        
-                        {/* 遮罩层 */}
-                        <div className="absolute inset-0 bg-black/50 group-hover:bg-black/40 transition-all duration-300" />
+                        {/* 背景图片容器 */}
+                        <div className="absolute inset-0 rounded-2xl overflow-hidden">
+                          {/* 背景图片 */}
+                          <div
+                            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                            style={{ backgroundImage: `url(${func.backgroundImage})` }}
+                          />
+                          
+                          {/* 遮罩层 */}
+                          <div className="absolute inset-0 bg-black/50 group-hover:bg-black/40 transition-all duration-300" />
+                        </div>
                         
                         {/* 内容 */}
                         <div className="relative z-10 h-full flex flex-col justify-center items-center p-6">
@@ -143,7 +146,7 @@ const FunctionPage: React.FC = () => {
                           </p>
                         </div>
                         
-                        {/* 悬停效果 */}
+                        {/* 悬停效果边框 */}
                         <div className="absolute inset-0 border-2 border-transparent group-hover:border-orange-500/60 rounded-2xl transition-all duration-300" />
                       </button>
                     </div>
