@@ -92,7 +92,7 @@ const FunctionPage: React.FC = () => {
         </div>
 
         {/* 功能模块容器 */}
-        <div className="flex-1 flex items-center justify-center relative">
+        <div className="flex-1 flex items-center justify-center relative px-16">
           {/* 左滚动按钮 */}
           {chunkedFunctions.length > 1 && (
             <button
@@ -104,7 +104,7 @@ const FunctionPage: React.FC = () => {
           )}
 
           {/* 功能模块滚动容器 */}
-          <div className="w-full max-w-5xl mx-auto">
+          <div className="w-full max-w-6xl mx-auto px-8">
             <div
               id="functions-container"
               className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory gap-12"
