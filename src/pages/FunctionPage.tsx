@@ -9,7 +9,7 @@ interface FunctionItem {
 }
 
 const FunctionPage: React.FC = () => {
-  // 6个功能模块
+  // 7个功能模块（新增打印功能）
   const functions: FunctionItem[] = [
     {
       id: 'tables',
@@ -46,6 +46,12 @@ const FunctionPage: React.FC = () => {
       name: '配置',
       description: '系统配置',
       backgroundImage: 'https://images.pexels.com/photos/574071/pexels-photo-574071.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop'
+    },
+    {
+      id: 'print',
+      name: '打印',
+      description: '打印管理',
+      backgroundImage: 'https://images.pexels.com/photos/4386370/pexels-photo-4386370.jpeg?auto=compress&cs=tinysrgb&w=800&h=600&fit=crop'
     }
   ]
 
