@@ -1,4 +1,5 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
 interface RestaurantItem {
   id: string
@@ -7,6 +8,8 @@ interface RestaurantItem {
 }
 
 const CategoryPage: React.FC = () => {
+  const navigate = useNavigate()
+  
   // 可配置的餐厅列表
   const restaurants: RestaurantItem[] = [
     {
@@ -28,7 +31,7 @@ const CategoryPage: React.FC = () => {
 
   const handleRestaurantClick = (restaurantId: string) => {
     console.log(`Selected restaurant: ${restaurantId}`)
-    // 这里可以添加导航到具体餐厅菜单页面的逻辑
+    navigate(`/function/${restaurantId}`)
   }
 
   return (

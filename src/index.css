@@ -39,6 +39,16 @@ body {
   background: rgba(0, 0, 0, 0.3);
 }
 
+/* 隐藏滚动条 */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* 玻璃形态效果 */
 .glass-effect {
   backdrop-filter: blur(10px);
