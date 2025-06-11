@@ -134,11 +134,11 @@ const FunctionPage: React.FC = () => {
                         <div className="absolute inset-0 bg-black/50 group-hover:bg-black/40 transition-all duration-300" />
                         
                         {/* 内容 */}
-                        <div className="relative z-10 h-full flex flex-col justify-end p-6">
-                          <h3 className="text-2xl font-bold text-white mb-2 group-hover:scale-110 transition-transform duration-300">
+                        <div className="relative z-10 h-full flex flex-col justify-center items-center p-6">
+                          <h3 className="text-4xl font-bold text-white mb-3 group-hover:scale-110 transition-transform duration-300">
                             {func.name}
                           </h3>
-                          <p className="text-white/90 text-sm group-hover:text-white transition-colors duration-300">
+                          <p className="text-lg text-white/90 group-hover:text-white transition-colors duration-300">
                             {func.description}
                           </p>
                         </div>
