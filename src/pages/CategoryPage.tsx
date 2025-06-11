@@ -44,17 +44,6 @@ const CategoryPage: React.FC = () => {
       {/* 背景遮罩 */}
       <div className="absolute inset-0 bg-black/50" />
       
-      {/* 状态栏 */}
-      <div className="absolute top-0 left-0 right-0 z-10 flex justify-between items-center p-4 text-white text-sm">
-        <span>下午 5:32 4月18日周一</span>
-        <div className="flex items-center gap-2">
-          <span>90%</span>
-          <div className="w-6 h-3 border border-white rounded-sm">
-            <div className="w-5/6 h-full bg-white rounded-sm" />
-          </div>
-        </div>
-      </div>
-
       {/* 主要内容 */}
       <div className="relative z-20 h-full flex items-center justify-center p-8">
         <div className="w-full max-w-4xl">
