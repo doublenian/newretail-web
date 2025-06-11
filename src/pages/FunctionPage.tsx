@@ -1,5 +1,5 @@
 import React from 'react'
-import { ChevronUp, ChevronDown } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface FunctionItem {
   id: string
@@ -54,18 +54,24 @@ const FunctionPage: React.FC = () => {
     // 这里可以添加导航到具体功能页面的逻辑
   }
 
-  const scrollUp = () => {
+  const scrollLeft = () => {
     const container = document.getElementById('functions-container')
     if (container) {
-      container.scrollBy({ top: -200, behavior: 'smooth' })
+      container.scrollBy({ left: -600, behavior: 'smooth' })
     }
   }
 
-  const scrollDown = () => {
+  const scrollRight = () => {
     const container = document.getElementById('functions-container')
     if (container) {
-      container.scrollBy({ top: 200, behavior: 'smooth' })
+      container.scrollBy({ left: 600, behavior: 'smooth' })
     }
+  }
+
+  // 将功能分组，每组6个（2行3列）
+  const chunkedFunctions: FunctionItem[][] = []
+  for (let i = 0; i < functions.length; i += 6) {
+    chunkedFunctions.push(functions.slice(i, i + 6))
   }
 
   return (
@@ -86,69 +92,80 @@ const FunctionPage: React.FC = () => {
         </div>
 
         {/* 功能模块容器 */}
-        <div className="flex-1 flex items-center justify-center relative max-w-4xl mx-auto w-full">
-          {/* 上滚动按钮 */}
-          <button
-            onClick={scrollUp}
-            className="absolute top-0 left-1/2 transform -translate-x-1/2 z-30 w-12 h-8 rounded-b-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 transition-all duration-300 flex items-center justify-center"
-          >
-            <ChevronUp className="w-5 h-5" />
-          </button>
+        <div className="flex-1 flex items-center justify-center relative max-w-6xl mx-auto w-full">
+          {/* 左滚动按钮 */}
+          {chunkedFunctions.length > 1 && (
+            <button
+              onClick={scrollLeft}
+              className="absolute left-0 top-1/2 transform -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 transition-all duration-300 flex items-center justify-center"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+          )}
 
-          {/* 功能模块网格 */}
+          {/* 功能模块滚动容器 */}
           <div
             id="functions-container"
-            className="grid grid-cols-2 gap-6 overflow-y-auto scrollbar-hide max-h-full py-12 px-4"
+            className="flex overflow-x-auto scrollbar-hide snap-x snap-mandatory gap-8 px-16"
           >
-            {functions.map((func, index) => (
+            {chunkedFunctions.map((chunk, chunkIndex) => (
               <div
-                key={func.id}
-                className="animate-slide-up"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                key={chunkIndex}
+                className="flex-shrink-0 snap-center grid grid-cols-3 grid-rows-2 gap-6 w-full max-w-4xl"
               >
-                <button
-                  onClick={() => handleFunctionClick(func.id)}
-                  className="group relative w-full h-48 rounded-2xl overflow-hidden shadow-2xl hover:scale-105 transform transition-all duration-300 cursor-pointer"
-                >
-                  {/* 背景图片 */}
+                {chunk.map((func, index) => (
                   <div
-                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                    style={{ backgroundImage: `url(${func.backgroundImage})` }}
-                  />
-                  
-                  {/* 遮罩层 */}
-                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300" />
-                  
-                  {/* 内容 */}
-                  <div className="relative z-10 h-full flex flex-col justify-end p-6">
-                    <h3 className="text-2xl font-bold text-white mb-2 group-hover:scale-110 transition-transform duration-300">
-                      {func.name}
-                    </h3>
-                    <p className="text-white/80 text-sm group-hover:text-white transition-colors duration-300">
-                      {func.description}
-                    </p>
+                    key={func.id}
+                    className="animate-slide-up"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                  >
+                    <button
+                      onClick={() => handleFunctionClick(func.id)}
+                      className="group relative w-full h-40 rounded-2xl overflow-hidden shadow-2xl hover:scale-105 transform transition-all duration-300 cursor-pointer"
+                    >
+                      {/* 背景图片 */}
+                      <div
+                        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                        style={{ backgroundImage: `url(${func.backgroundImage})` }}
+                      />
+                      
+                      {/* 遮罩层 */}
+                      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/30 transition-all duration-300" />
+                      
+                      {/* 内容 */}
+                      <div className="relative z-10 h-full flex flex-col justify-end p-4">
+                        <h3 className="text-xl font-bold text-white mb-1 group-hover:scale-110 transition-transform duration-300">
+                          {func.name}
+                        </h3>
+                        <p className="text-white/80 text-xs group-hover:text-white transition-colors duration-300">
+                          {func.description}
+                        </p>
+                      </div>
+                      
+                      {/* 悬停效果 */}
+                      <div className="absolute inset-0 border-2 border-transparent group-hover:border-orange-500/50 rounded-2xl transition-all duration-300" />
+                    </button>
                   </div>
-                  
-                  {/* 悬停效果 */}
-                  <div className="absolute inset-0 border-2 border-transparent group-hover:border-orange-500/50 rounded-2xl transition-all duration-300" />
-                </button>
+                ))}
               </div>
             ))}
           </div>
 
-          {/* 下滚动按钮 */}
-          <button
-            onClick={scrollDown}
-            className="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-30 w-12 h-8 rounded-t-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 transition-all duration-300 flex items-center justify-center"
-          >
-            <ChevronDown className="w-5 h-5" />
-          </button>
+          {/* 右滚动按钮 */}
+          {chunkedFunctions.length > 1 && (
+            <button
+              onClick={scrollRight}
+              className="absolute right-0 top-1/2 transform -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 transition-all duration-300 flex items-center justify-center"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          )}
         </div>
 
         {/* 底部提示 */}
         <div className="text-center mt-4 animate-fade-in" style={{ animationDelay: '0.8s' }}>
           <p className="text-white/60 text-sm">
-            点击功能模块进入相应操作界面，可上下滑动查看更多功能
+            点击功能模块进入相应操作界面{chunkedFunctions.length > 1 && '，可左右滑动查看更多功能'}
           </p>
         </div>
       </div>
