@@ -102,7 +102,7 @@ const OrderDetailsPage: React.FC = () => {
   }
 
   return (
-    <div className="h-full w-full bg-gray-50 flex flex-col">
+    <div className="h-full w-full bg-gray-50 flex flex-col relative">
       {/* 顶部导航栏 */}
       <div className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
@@ -198,7 +198,7 @@ const OrderDetailsPage: React.FC = () => {
           </div>
 
           {/* 菜品列表 */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="bg-white rounded-lg shadow-sm p-6 pb-24">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-800">已点菜品</h2>
               <button
@@ -270,34 +270,24 @@ const OrderDetailsPage: React.FC = () => {
                 <span className="text-orange-600">¥{getTotalPrice() + Math.round(getTotalPrice() * 0.15)}</span>
               </div>
             </div>
-
-            {/* 操作按钮 */}
-            <div className="space-y-3">
-              <button
-                onClick={goBackToOrdering}
-                className="w-full py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
-              >
-                继续点餐
-              </button>
-              <button
-                onClick={submitOrder}
-                className="w-full py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-bold hover:from-orange-600 hover:to-red-600 transition-all"
-              >
-                确认下单
-              </button>
-            </div>
-
-            {/* 提示信息 */}
-            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-blue-600">
-                <strong>温馨提示：</strong><br />
-                • 菜品制作需要一定时间，请耐心等待<br />
-                • 如需修改订单，请联系服务员<br />
-                • 本餐厅收取15%服务费
-              </p>
-            </div>
           </div>
         </div>
+      </div>
+
+      {/* 固定在右下角的操作按钮 */}
+      <div className="fixed bottom-6 right-6 flex gap-3 z-40">
+        <button
+          onClick={goBackToOrdering}
+          className="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors shadow-lg"
+        >
+          继续点餐
+        </button>
+        <button
+          onClick={submitOrder}
+          className="px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-bold hover:from-orange-600 hover:to-red-600 transition-all shadow-lg"
+        >
+          确认下单
+        </button>
       </div>
 
       {/* 人数修改弹框 */}
