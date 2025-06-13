@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate, useLocation, useParams } from 'react-router-dom'
-import { ArrowLeft, Plus, Clock, Users, Receipt, Edit3 } from 'lucide-react'
+import { ArrowLeft, Plus, Clock, Users, Receipt, Edit3, Smartphone, CreditCard, QrCode } from 'lucide-react'
 
 interface CartItem {
   id: string
@@ -20,6 +20,8 @@ interface OrderDetailsPageState {
   tableNumber: string
 }
 
+type PaymentMethod = 'alipay' | 'wechat'
+
 const OrderDetailsPage: React.FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -30,6 +32,8 @@ const OrderDetailsPage: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>(orderData?.cart || [])
   const [customerCount, setCustomerCount] = useState(2) // 默认2人
   const [showCustomerModal, setShowCustomerModal] = useState(false)
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>('alipay')
   
   // 生成账单号（时间戳 + 随机数）
   const billNumber = React.useMemo(() => {
@@ -53,6 +57,13 @@ const OrderDetailsPage: React.FC = () => {
     return cart.reduce((total, item) => total + item.quantity, 0)
   }
 
+  // 计算最终支付金额（包含服务费）
+  const getFinalPaymentAmount = () => {
+    const subtotal = getTotalPrice()
+    const serviceFee = Math.round(subtotal * 0.15)
+    return subtotal + serviceFee
+  }
+
   // 返回点餐页面继续添加
   const goBackToOrdering = () => {
     navigate(`/ordering/${tableNumber}`, {
@@ -65,20 +76,26 @@ const OrderDetailsPage: React.FC = () => {
     navigate('/tables')
   }
 
-  // 提交订单
-  const submitOrder = () => {
-    // 这里可以添加提交订单的逻辑
-    console.log('Submitting order:', {
+  // 显示支付弹框
+  const showPayment = () => {
+    setShowPaymentModal(true)
+  }
+
+  // 完成支付
+  const completePayment = () => {
+    // 这里可以添加实际的支付逻辑
+    console.log('Payment completed:', {
       billNumber,
       tableNumber,
       customerCount,
       cart,
-      totalPrice: getTotalPrice(),
-      totalQuantity: getTotalQuantity()
+      paymentMethod: selectedPaymentMethod,
+      totalAmount: getFinalPaymentAmount()
     })
     
-    // 模拟提交成功，可以跳转到成功页面或返回桌台页面
-    alert(`订单提交成功！\n账单号：${billNumber}\n桌台：${tableNumber}\n总金额：¥${getTotalPrice()}`)
+    // 模拟支付成功
+    setShowPaymentModal(false)
+    alert(`支付成功！\n账单号：${billNumber}\n桌台：${tableNumber}\n支付金额：¥${getFinalPaymentAmount()}\n支付方式：${selectedPaymentMethod === 'alipay' ? '支付宝' : '微信支付'}`)
     navigate('/tables')
   }
 
@@ -267,7 +284,7 @@ const OrderDetailsPage: React.FC = () => {
               <hr className="my-3" />
               <div className="flex justify-between text-lg font-bold">
                 <span className="text-gray-800">合计金额</span>
-                <span className="text-orange-600">¥{getTotalPrice() + Math.round(getTotalPrice() * 0.15)}</span>
+                <span className="text-orange-600">¥{getFinalPaymentAmount()}</span>
               </div>
             </div>
           </div>
@@ -283,10 +300,10 @@ const OrderDetailsPage: React.FC = () => {
           继续点餐
         </button>
         <button
-          onClick={submitOrder}
+          onClick={showPayment}
           className="px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-bold hover:from-orange-600 hover:to-red-600 transition-all shadow-lg"
         >
-          确认下单
+          确认结账
         </button>
       </div>
 
@@ -327,6 +344,100 @@ const OrderDetailsPage: React.FC = () => {
               >
                 确定
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 支付方式选择弹框 */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl max-w-md w-full mx-4 overflow-hidden shadow-2xl">
+            {/* 弹框头部 */}
+            <div className="p-6 border-b border-gray-200">
+              <h2 className="text-xl font-bold text-gray-800 text-center">选择支付方式</h2>
+              <p className="text-center text-gray-600 mt-2">
+                支付金额：<span className="text-2xl font-bold text-orange-600">¥{getFinalPaymentAmount()}</span>
+              </p>
+            </div>
+
+            {/* Tab切换 */}
+            <div className="flex bg-gray-50">
+              <button
+                onClick={() => setSelectedPaymentMethod('alipay')}
+                className={`flex-1 flex items-center justify-center gap-2 py-4 px-6 transition-all ${
+                  selectedPaymentMethod === 'alipay'
+                    ? 'bg-white text-blue-600 border-b-2 border-blue-600'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                <Smartphone className="w-5 h-5" />
+                <span className="font-medium">支付宝</span>
+              </button>
+              <button
+                onClick={() => setSelectedPaymentMethod('wechat')}
+                className={`flex-1 flex items-center justify-center gap-2 py-4 px-6 transition-all ${
+                  selectedPaymentMethod === 'wechat'
+                    ? 'bg-white text-green-600 border-b-2 border-green-600'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                <CreditCard className="w-5 h-5" />
+                <span className="font-medium">微信支付</span>
+              </button>
+            </div>
+
+            {/* 二维码区域 */}
+            <div className="p-8">
+              <div className="text-center">
+                {/* 二维码容器 */}
+                <div className="w-48 h-48 mx-auto mb-4 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
+                  <div className="text-center">
+                    <QrCode className={`w-16 h-16 mx-auto mb-2 ${
+                      selectedPaymentMethod === 'alipay' ? 'text-blue-500' : 'text-green-500'
+                    }`} />
+                    <p className="text-sm text-gray-500">
+                      {selectedPaymentMethod === 'alipay' ? '支付宝' : '微信'}扫码支付
+                    </p>
+                  </div>
+                </div>
+
+                {/* 支付提示 */}
+                <div className={`p-4 rounded-lg mb-4 ${
+                  selectedPaymentMethod === 'alipay' 
+                    ? 'bg-blue-50 border border-blue-200' 
+                    : 'bg-green-50 border border-green-200'
+                }`}>
+                  <p className={`text-sm font-medium ${
+                    selectedPaymentMethod === 'alipay' ? 'text-blue-700' : 'text-green-700'
+                  }`}>
+                    请使用{selectedPaymentMethod === 'alipay' ? '支付宝' : '微信'}扫描上方二维码完成支付
+                  </p>
+                  <p className="text-xs text-gray-600 mt-1">
+                    桌台: {tableNumber} | 账单号: {billNumber}
+                  </p>
+                </div>
+
+                {/* 操作按钮 */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowPaymentModal(false)}
+                    className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                  >
+                    取消支付
+                  </button>
+                  <button
+                    onClick={completePayment}
+                    className={`flex-1 py-3 rounded-lg font-bold text-white transition-all ${
+                      selectedPaymentMethod === 'alipay'
+                        ? 'bg-blue-500 hover:bg-blue-600'
+                        : 'bg-green-500 hover:bg-green-600'
+                    }`}
+                  >
+                    支付完成
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
