@@ -961,9 +961,9 @@ const TablesPage: React.FC = () => {
 
       {/* 右侧内容区域 */}
       <div className="flex-1 flex flex-col">
-        {/* 顶部标题和桌台类型筛选 */}
+        {/* 顶部标题和返回按钮 */}
         <div className="bg-white p-4 border-b border-gray-200 shadow-sm">
-          {/* 页面标题 */}
+          {/* 页面标题 - 移到左上角 */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">
               <button 
