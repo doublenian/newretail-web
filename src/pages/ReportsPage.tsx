@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, FileText, BarChart3, PieChart, TrendingUp, Download, Calendar, Filter, RefreshCw } from 'lucide-react'
+import { ArrowLeft, FileText, BarChart3, PieChart, TrendingUp, Download, Calendar, Filter, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface ReportCategory {
   id: string
@@ -14,11 +14,36 @@ interface Report {
   description?: string
 }
 
+interface TableData {
+  id: string
+  name: string
+  quantity: number
+  amount: number
+  status: string
+  category: string
+  date: string
+  paymentMethod: string
+}
+
 const ReportsPage: React.FC = () => {
   const navigate = useNavigate()
   const [selectedCategory, setSelectedCategory] = useState('financial')
   const [selectedReport, setSelectedReport] = useState<Report | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(20)
+
+  // 模拟表格数据
+  const mockTableData: TableData[] = Array.from({ length: 150 }, (_, index) => ({
+    id: `${index + 1}`,
+    name: `数据项目 ${index + 1}`,
+    quantity: Math.floor(Math.random() * 1000) + 1,
+    amount: Math.floor(Math.random() * 10000) + 100,
+    status: ['正常', '异常', '待处理'][Math.floor(Math.random() * 3)],
+    category: ['财务', '销售', '其他'][Math.floor(Math.random() * 3)],
+    date: `2025-05-${String(Math.floor(Math.random() * 30) + 1).padStart(2, '0')}`,
+    paymentMethod: ['现金', '支付宝', '微信', '银行卡'][Math.floor(Math.random() * 4)]
+  }))
 
   // 报表分类数据
   const reportCategories: ReportCategory[] = [
@@ -94,16 +119,50 @@ const ReportsPage: React.FC = () => {
     }
   }
 
+  // 分页逻辑
+  const totalPages = Math.ceil(mockTableData.length / pageSize)
+  const startIndex = (currentPage - 1) * pageSize
+  const endIndex = startIndex + pageSize
+  const currentPageData = mockTableData.slice(startIndex, endIndex)
+
+  // 获取状态样式
+  const getStatusStyle = (status: string) => {
+    switch (status) {
+      case '正常':
+        return 'bg-green-100 text-green-800'
+      case '异常':
+        return 'bg-red-100 text-red-800'
+      case '待处理':
+        return 'bg-yellow-100 text-yellow-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
+    }
+  }
+
   // 生成报表
   const generateReport = async (report: Report) => {
     setIsGenerating(true)
     setSelectedReport(report)
+    setCurrentPage(1) // 重置到第一页
     
     // 模拟报表生成过程
     setTimeout(() => {
       setIsGenerating(false)
       console.log('Generated report:', report.id)
-    }, 2000)
+    }, 1500)
+  }
+
+  // 页码跳转
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page)
+    }
+  }
+
+  // 页面大小改变
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPageSize(newPageSize)
+    setCurrentPage(1) // 重置到第一页
   }
 
   const goBack = () => {
@@ -232,116 +291,205 @@ const ReportsPage: React.FC = () => {
         </div>
 
         {/* 报表内容区域 */}
-        <div className="flex-1 bg-gray-50 flex items-center justify-center p-8">
+        <div className="flex-1 bg-white overflow-hidden flex flex-col">
           {isGenerating ? (
-            <div className="text-center">
-              <div className="w-16 h-16 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin mx-auto mb-4"></div>
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">正在生成报表...</h3>
-              <p className="text-gray-500">请稍候，正在处理数据并生成报表</p>
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center">
+                <div className="w-16 h-16 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin mx-auto mb-4"></div>
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">正在生成报表...</h3>
+                <p className="text-gray-500">请稍候，正在处理数据并生成报表</p>
+              </div>
             </div>
           ) : selectedReport ? (
-            <div className="w-full max-w-4xl">
-              {/* 报表内容容器 */}
-              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-gray-800 mb-2">{selectedReport.name}</h3>
-                  <p className="text-gray-600">{selectedReport.description}</p>
-                  <div className="mt-4 text-sm text-gray-500">
-                    生成时间: {new Date().toLocaleString('zh-CN')}
+            <>
+              {/* 报表信息栏 */}
+              <div className="p-4 bg-gray-50 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-gray-800">{selectedReport.name}</h3>
+                    <p className="text-sm text-gray-600 mt-1">
+                      生成时间: {new Date().toLocaleString('zh-CN')} | 
+                      共 {mockTableData.length} 条记录
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-gray-600">每页显示:</span>
+                    <select
+                      value={pageSize}
+                      onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+                      className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-orange-500"
+                    >
+                      <option value={10}>10 条</option>
+                      <option value={20}>20 条</option>
+                      <option value={50}>50 条</option>
+                      <option value={100}>100 条</option>
+                    </select>
                   </div>
                 </div>
+              </div>
 
-                {/* 模拟报表数据展示区域 */}
-                <div className="space-y-6">
-                  {/* 数据统计卡片 */}
-                  <div className="grid grid-cols-4 gap-4 mb-8">
-                    <div className="bg-blue-50 rounded-lg p-4 text-center">
-                      <div className="text-2xl font-bold text-blue-600 mb-1">1,234</div>
-                      <div className="text-sm text-gray-600">总记录数</div>
-                    </div>
-                    <div className="bg-green-50 rounded-lg p-4 text-center">
-                      <div className="text-2xl font-bold text-green-600 mb-1">¥45,678</div>
-                      <div className="text-sm text-gray-600">总金额</div>
-                    </div>
-                    <div className="bg-orange-50 rounded-lg p-4 text-center">
-                      <div className="text-2xl font-bold text-orange-600 mb-1">89.5%</div>
-                      <div className="text-sm text-gray-600">增长率</div>
-                    </div>
-                    <div className="bg-purple-50 rounded-lg p-4 text-center">
-                      <div className="text-2xl font-bold text-purple-600 mb-1">567</div>
-                      <div className="text-sm text-gray-600">活跃数量</div>
-                    </div>
+              {/* 表格容器 */}
+              <div className="flex-1 overflow-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50 sticky top-0 z-10">
+                    <tr>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">序号</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">项目名称</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">数量</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">金额</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">分类</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">日期</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">支付方式</th>
+                      <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">状态</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {currentPageData.map((item, index) => (
+                      <tr key={item.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {startIndex + index + 1}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                          {item.name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {item.quantity.toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                          ¥{item.amount.toLocaleString()}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {item.category}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {item.date}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {item.paymentMethod}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusStyle(item.status)}`}>
+                            {item.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* 分页控件 */}
+              <div className="bg-white border-t border-gray-200 px-6 py-4">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm text-gray-700">
+                    显示第 {startIndex + 1} 到 {Math.min(endIndex, mockTableData.length)} 条，共 {mockTableData.length} 条记录
                   </div>
+                  
+                  <div className="flex items-center gap-4">
+                    {/* 上一页按钮 */}
+                    <button
+                      onClick={() => goToPage(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className={`flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                        currentPage === 1
+                          ? 'text-gray-400 cursor-not-allowed'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                      上一页
+                    </button>
 
-                  {/* 模拟数据表格 */}
-                  <div className="bg-gray-50 rounded-lg p-6">
-                    <h4 className="text-lg font-semibold text-gray-800 mb-4">详细数据</h4>
-                    <div className="bg-white rounded-lg overflow-hidden border border-gray-200">
-                      <table className="w-full">
-                        <thead className="bg-gray-50">
-                          <tr>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">序号</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">项目名称</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">数量</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">金额</th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">状态</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200">
-                          {[1, 2, 3, 4, 5].map((item) => (
-                            <tr key={item} className="hover:bg-gray-50">
-                              <td className="px-4 py-3 text-sm text-gray-900">{item}</td>
-                              <td className="px-4 py-3 text-sm text-gray-900">数据项目 {item}</td>
-                              <td className="px-4 py-3 text-sm text-gray-900">{item * 123}</td>
-                              <td className="px-4 py-3 text-sm text-gray-900">¥{(item * 1234).toLocaleString()}</td>
-                              <td className="px-4 py-3">
-                                <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                                  正常
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                    {/* 页码 */}
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                        let pageNum
+                        if (totalPages <= 5) {
+                          pageNum = i + 1
+                        } else if (currentPage <= 3) {
+                          pageNum = i + 1
+                        } else if (currentPage >= totalPages - 2) {
+                          pageNum = totalPages - 4 + i
+                        } else {
+                          pageNum = currentPage - 2 + i
+                        }
+
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => goToPage(pageNum)}
+                            className={`w-8 h-8 text-sm font-medium rounded-lg transition-colors ${
+                              currentPage === pageNum
+                                ? 'bg-orange-500 text-white'
+                                : 'text-gray-700 hover:bg-gray-100'
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        )
+                      })}
                     </div>
-                  </div>
 
-                  {/* 图表占位区域 */}
-                  <div className="bg-gray-50 rounded-lg p-6">
-                    <h4 className="text-lg font-semibold text-gray-800 mb-4">趋势图表</h4>
-                    <div className="bg-white rounded-lg border border-gray-200 h-64 flex items-center justify-center">
-                      <div className="text-center">
-                        <BarChart3 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <p className="text-gray-500">图表数据展示区域</p>
-                        <p className="text-sm text-gray-400 mt-1">此处将显示相关的数据图表和可视化分析</p>
-                      </div>
+                    {/* 下一页按钮 */}
+                    <button
+                      onClick={() => goToPage(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className={`flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
+                        currentPage === totalPages
+                          ? 'text-gray-400 cursor-not-allowed'
+                          : 'text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      下一页
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+
+                    {/* 跳转到指定页 */}
+                    <div className="flex items-center gap-2 text-sm text-gray-700">
+                      <span>前往</span>
+                      <input
+                        type="number"
+                        min="1"
+                        max={totalPages}
+                        value={currentPage}
+                        onChange={(e) => {
+                          const page = parseInt(e.target.value)
+                          if (page >= 1 && page <= totalPages) {
+                            goToPage(page)
+                          }
+                        }}
+                        className="w-16 px-2 py-1 text-center border border-gray-300 rounded focus:outline-none focus:border-orange-500"
+                      />
+                      <span>页</span>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </>
           ) : (
-            <div className="text-center">
-              <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <FileText className="w-12 h-12 text-gray-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-600 mb-2">请选择报表类型</h3>
-              <p className="text-gray-500 mb-6">从左侧选择您需要查看的报表类型和具体报表</p>
-              <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
-                {reportCategories.map((category) => (
-                  <button
-                    key={category.id}
-                    onClick={() => setSelectedCategory(category.id)}
-                    className="p-4 bg-white rounded-lg shadow-sm border border-gray-200 hover:border-orange-300 hover:shadow-md transition-all duration-200 group"
-                  >
-                    <div className="w-10 h-10 bg-gray-100 group-hover:bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-2 transition-colors">
-                      {getCategoryIcon(category.id)}
-                    </div>
-                    <div className="text-sm font-medium text-gray-700 group-hover:text-orange-600 transition-colors">
-                      {category.name}
-                    </div>
-                  </button>
-                ))}
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center">
+                <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <FileText className="w-12 h-12 text-gray-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-600 mb-2">请选择报表类型</h3>
+                <p className="text-gray-500 mb-6">从左侧选择您需要查看的报表类型和具体报表</p>
+                <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
+                  {reportCategories.map((category) => (
+                    <button
+                      key={category.id}
+                      onClick={() => setSelectedCategory(category.id)}
+                      className="p-4 bg-white rounded-lg shadow-sm border border-gray-200 hover:border-orange-300 hover:shadow-md transition-all duration-200 group"
+                    >
+                      <div className="w-10 h-10 bg-gray-100 group-hover:bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-2 transition-colors">
+                        {getCategoryIcon(category.id)}
+                      </div>
+                      <div className="text-sm font-medium text-gray-700 group-hover:text-orange-600 transition-colors">
+                        {category.name}
+                      </div>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           )}
