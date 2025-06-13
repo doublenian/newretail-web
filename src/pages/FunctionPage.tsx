@@ -70,6 +70,9 @@ const FunctionPage: React.FC = () => {
           title: '收银结算 - 选择桌台' 
         } 
       })
+    } else if (functionId === 'orders') {
+      // 跳转到订单管理页面
+      navigate('/orders')
     }
     // 这里可以添加导航到其他功能页面的逻辑
   }
