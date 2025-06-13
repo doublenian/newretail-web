@@ -49,7 +49,7 @@ const OrderingPage: React.FC = () => {
 
   // 丰富的菜品数据
   const menuItems: MenuItem[] = [
-    // 热销推荐
+    // 热销推荐 - 增加更多菜品
     {
       id: 'item1',
       name: '酥皮肉夹馍',
@@ -65,7 +65,8 @@ const OrderingPage: React.FC = () => {
       price: 168,
       image: 'https://images.pexels.com/photos/361184/asparagus-steak-veal-cutlet-veal-361184.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
       category: 'hot-sale',
-      description: '精选澳洲牛肉  剩余 3 份'
+      description: '精选澳洲牛肉  剩余 3 份',
+      isRecommended: true
     },
     {
       id: 'item3',
@@ -82,6 +83,72 @@ const OrderingPage: React.FC = () => {
       image: 'https://images.pexels.com/photos/262959/pexels-photo-262959.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
       category: 'hot-sale',
       description: '挪威进口三文鱼  剩余 2 份'
+    },
+    {
+      id: 'item5',
+      name: '蒜蓉小龙虾',
+      price: 158,
+      image: 'https://images.pexels.com/photos/1410235/pexels-photo-1410235.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'hot-sale',
+      description: '夏日必备  麻辣鲜香  剩余 5 份',
+      isRecommended: true
+    },
+    {
+      id: 'item6',
+      name: '水煮鱼',
+      price: 138,
+      image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'hot-sale',
+      description: '麻辣鲜香  嫩滑鱼肉  剩余 3 份'
+    },
+    {
+      id: 'item7',
+      name: '招牌烤鸭',
+      price: 188,
+      image: 'https://images.pexels.com/photos/1268549/pexels-photo-1268549.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'hot-sale',
+      description: '传统工艺  皮脆肉嫩  剩余 2 份',
+      isRecommended: true
+    },
+    {
+      id: 'item8',
+      name: '麻婆豆腐',
+      price: 68,
+      image: 'https://images.pexels.com/photos/2097090/pexels-photo-2097090.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'hot-sale',
+      description: '经典川菜  下饭神器  剩余 8 份'
+    },
+    {
+      id: 'item9',
+      name: '糖醋排骨',
+      price: 98,
+      image: 'https://images.pexels.com/photos/725997/pexels-photo-725997.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'hot-sale',
+      description: '酸甜开胃  老少皆宜  剩余 4 份'
+    },
+    {
+      id: 'item10',
+      name: '蒜蓉扇贝',
+      price: 128,
+      image: 'https://images.pexels.com/photos/1633578/pexels-photo-1633578.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'hot-sale',
+      description: '新鲜扇贝  蒜香浓郁  剩余 6 份'
+    },
+    {
+      id: 'item11',
+      name: '红烧肉',
+      price: 88,
+      image: 'https://images.pexels.com/photos/2338407/pexels-photo-2338407.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'hot-sale',
+      description: '肥瘦相间  入口即化  剩余 5 份'
+    },
+    {
+      id: 'item12',
+      name: '宫保鸡丁',
+      price: 78,
+      image: 'https://images.pexels.com/photos/1640772/pexels-photo-1640772.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'hot-sale',
+      description: '经典家常菜  剩余 7 份'
     },
 
     // 老板推荐
@@ -489,6 +556,10 @@ const OrderingPage: React.FC = () => {
                         src={item.image} 
                         alt={item.name}
                         className="w-full h-48 object-cover"
+                        onError={(e) => {
+                          // 图片加载失败时的备用图片
+                          e.currentTarget.src = 'https://images.pexels.com/photos/1633578/pexels-photo-1633578.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'
+                        }}
                       />
                       {item.isRecommended && (
                         <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
