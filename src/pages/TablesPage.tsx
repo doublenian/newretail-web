@@ -217,9 +217,6 @@ const TablesPage: React.FC = () => {
                   {area.tables.length}
                 </div>
               </div>
-              
-              {/* 悬停效果 */}
-              <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-red-500/10 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </button>
           ))}
         </div>
