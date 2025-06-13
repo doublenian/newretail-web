@@ -47,8 +47,9 @@ const OrderingPage: React.FC = () => {
     { id: 'drinks', name: '酒水饮料' }
   ]
 
-  // 模拟菜品数据
+  // 丰富的菜品数据
   const menuItems: MenuItem[] = [
+    // 热销推荐
     {
       id: 'item1',
       name: '酥皮肉夹馍',
@@ -60,55 +61,250 @@ const OrderingPage: React.FC = () => {
     },
     {
       id: 'item2',
-      name: '酥皮肉夹馍',
-      price: 128,
-      image: 'https://images.pexels.com/photos/1633578/pexels-photo-1633578.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      name: '黑椒牛排',
+      price: 168,
+      image: 'https://images.pexels.com/photos/361184/asparagus-steak-veal-cutlet-veal-361184.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
       category: 'hot-sale',
-      description: '剩余 4 份'
+      description: '精选澳洲牛肉  剩余 3 份'
     },
     {
       id: 'item3',
-      name: '酥皮肉夹馍',
-      price: 128,
-      image: 'https://images.pexels.com/photos/1633578/pexels-photo-1633578.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      name: '意式奶油面',
+      price: 98,
+      image: 'https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
       category: 'hot-sale',
-      description: '买3赠2  2份起售  剩余 4 份'
+      description: '正宗意式做法  剩余 6 份'
     },
     {
       id: 'item4',
-      name: '酥皮肉夹馍',
+      name: '烤三文鱼',
+      price: 188,
+      image: 'https://images.pexels.com/photos/262959/pexels-photo-262959.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'hot-sale',
+      description: '挪威进口三文鱼  剩余 2 份'
+    },
+
+    // 老板推荐
+    {
+      id: 'boss1',
+      name: '招牌红烧肉',
+      price: 88,
+      image: 'https://images.pexels.com/photos/2097090/pexels-photo-2097090.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'boss-recommend',
+      description: '老板亲自调味  招牌菜品',
+      isRecommended: true
+    },
+    {
+      id: 'boss2',
+      name: '蒜蓉粉丝扇贝',
+      price: 128,
+      image: 'https://images.pexels.com/photos/725997/pexels-photo-725997.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'boss-recommend',
+      description: '新鲜扇贝  蒜香浓郁'
+    },
+    {
+      id: 'boss3',
+      name: '秘制烤鸭',
+      price: 188,
+      image: 'https://images.pexels.com/photos/1268549/pexels-photo-1268549.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'boss-recommend',
+      description: '北京烤鸭工艺  皮脆肉嫩'
+    },
+    {
+      id: 'boss4',
+      name: '老板私房菜',
+      price: 158,
+      image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'boss-recommend',
+      description: '老板独创配方  限量供应'
+    },
+
+    // 冷菜
+    {
+      id: 'cold1',
+      name: '口水鸡',
+      price: 48,
+      image: 'https://images.pexels.com/photos/2338407/pexels-photo-2338407.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'cold-dish',
+      description: '四川经典  麻辣鲜香'
+    },
+    {
+      id: 'cold2',
+      name: '蒜泥白肉',
+      price: 58,
+      image: 'https://images.pexels.com/photos/1640772/pexels-photo-1640772.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'cold-dish',
+      description: '肥瘦相间  蒜香浓郁'
+    },
+    {
+      id: 'cold3',
+      name: '凉拌黄瓜',
+      price: 28,
+      image: 'https://images.pexels.com/photos/1099680/pexels-photo-1099680.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'cold-dish',
+      description: '清爽开胃  解腻必备'
+    },
+    {
+      id: 'cold4',
+      name: '拍黄瓜',
+      price: 25,
+      image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'cold-dish',
+      description: '蒜香味浓  爽脆可口'
+    },
+
+    // 热菜
+    {
+      id: 'hot1',
+      name: '宫保鸡丁',
+      price: 68,
+      image: 'https://images.pexels.com/photos/2097090/pexels-photo-2097090.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'hot-dish',
+      description: '经典川菜  酸甜可口'
+    },
+    {
+      id: 'hot2',
+      name: '麻婆豆腐',
+      price: 45,
+      image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'hot-dish',
+      description: '嫩滑豆腐  麻辣鲜香'
+    },
+    {
+      id: 'hot3',
+      name: '红烧排骨',
+      price: 88,
+      image: 'https://images.pexels.com/photos/725997/pexels-photo-725997.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'hot-dish',
+      description: '软糯香甜  老少皆宜'
+    },
+    {
+      id: 'hot4',
+      name: '糖醋里脊',
+      price: 78,
+      image: 'https://images.pexels.com/photos/1268549/pexels-photo-1268549.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'hot-dish',
+      description: '酸甜开胃  外酥内嫩'
+    },
+
+    // 香菜
+    {
+      id: 'fragrant1',
+      name: '香菜牛肉丸',
+      price: 58,
+      image: 'https://images.pexels.com/photos/2338407/pexels-photo-2338407.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'fragrant-dish',
+      description: '香菜提味  牛肉Q弹'
+    },
+    {
+      id: 'fragrant2',
+      name: '香菜炒鸡蛋',
+      price: 38,
+      image: 'https://images.pexels.com/photos/1640772/pexels-photo-1640772.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'fragrant-dish',
+      description: '香菜浓郁  鸡蛋嫩滑'
+    },
+    {
+      id: 'fragrant3',
+      name: '香菜拌豆腐',
+      price: 32,
+      image: 'https://images.pexels.com/photos/1099680/pexels-photo-1099680.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'fragrant-dish',
+      description: '清香爽口  营养丰富'
+    },
+
+    // 经典套餐
+    {
+      id: 'set1',
+      name: '商务套餐A',
       price: 128,
       image: 'https://images.pexels.com/photos/1633578/pexels-photo-1633578.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      category: 'hot-sale',
-      description: '剩余 4 份'
+      category: 'classic-set',
+      description: '主菜+汤+米饭+小菜'
     },
     {
-      id: 'item5',
-      name: '酥皮肉夹馍',
-      price: 128,
-      image: 'https://images.pexels.com/photos/262959/pexels-photo-262959.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      category: 'hot-sale'
+      id: 'set2',
+      name: '家庭套餐',
+      price: 288,
+      image: 'https://images.pexels.com/photos/361184/asparagus-steak-veal-cutlet-veal-361184.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'classic-set',
+      description: '3菜1汤  适合2-3人'
     },
     {
-      id: 'item6',
-      name: '酥皮肉夹馍',
-      price: 128,
-      image: 'https://images.pexels.com/photos/262959/pexels-photo-262959.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      category: 'hot-sale'
-    },
-    {
-      id: 'item7',
-      name: '酥皮肉夹馍',
-      price: 128,
+      id: 'set3',
+      name: '情侣套餐',
+      price: 188,
       image: 'https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      category: 'hot-sale'
+      category: 'classic-set',
+      description: '浪漫双人餐  含红酒'
+    },
+
+    // 特色烧烤
+    {
+      id: 'bbq1',
+      name: '烤羊肉串',
+      price: 6,
+      image: 'https://images.pexels.com/photos/2097090/pexels-photo-2097090.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'bbq',
+      description: '新疆羊肉  香嫩多汁'
     },
     {
-      id: 'item8',
-      name: '酥皮肉夹馍',
-      price: 128,
-      image: 'https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      category: 'hot-sale'
+      id: 'bbq2',
+      name: '烤鸡翅',
+      price: 15,
+      image: 'https://images.pexels.com/photos/725997/pexels-photo-725997.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'bbq',
+      description: '秘制腌料  外焦里嫩'
+    },
+    {
+      id: 'bbq3',
+      name: '烤玉米',
+      price: 12,
+      image: 'https://images.pexels.com/photos/1268549/pexels-photo-1268549.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'bbq',
+      description: '香甜玉米  刷特制酱'
+    },
+    {
+      id: 'bbq4',
+      name: '烤茄子',
+      price: 18,
+      image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'bbq',
+      description: '蒜蓉茄子  香气扑鼻'
+    },
+
+    // 酒水饮料
+    {
+      id: 'drink1',
+      name: '鲜榨橙汁',
+      price: 28,
+      image: 'https://images.pexels.com/photos/2338407/pexels-photo-2338407.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'drinks',
+      description: '现榨纯果汁  维C丰富'
+    },
+    {
+      id: 'drink2',
+      name: '柠檬蜂蜜茶',
+      price: 32,
+      image: 'https://images.pexels.com/photos/1640772/pexels-photo-1640772.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'drinks',
+      description: '酸甜清香  美容养颜'
+    },
+    {
+      id: 'drink3',
+      name: '特制奶茶',
+      price: 35,
+      image: 'https://images.pexels.com/photos/1099680/pexels-photo-1099680.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'drinks',
+      description: '丝滑香浓  回味无穷'
+    },
+    {
+      id: 'drink4',
+      name: '精酿啤酒',
+      price: 45,
+      image: 'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'drinks',
+      description: '德式工艺  口感醇厚'
     }
   ]
 
@@ -259,7 +455,7 @@ const OrderingPage: React.FC = () => {
                 className={`w-full text-left p-3 rounded-lg mb-2 transition-all duration-200 relative ${
                   selectedCategory === category.id
                     ? 'bg-orange-50 text-orange-600 border border-orange-200'
-                    : 'text-gray-700 hover:bg-gray-50'
+                    : 'text-gray-700 hover:bg-gray-50 border border-gray-200 hover:border-gray-300'
                 }`}
               >
                 <div className="flex items-center justify-between">
