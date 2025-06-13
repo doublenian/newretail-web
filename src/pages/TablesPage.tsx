@@ -397,6 +397,11 @@ const TablesPage: React.FC = () => {
 
   const handleTableClick = (table: TableStatus) => {
     console.log('Selected table:', table)
+    // 如果是未开台状态，跳转到点餐页面
+    if (table.status === 'available') {
+      navigate(`/ordering/${table.number}`)
+    }
+    // 其他状态可以添加相应的处理逻辑
   }
 
   const goBack = () => {
@@ -484,7 +489,9 @@ const TablesPage: React.FC = () => {
                 >
                   <button
                     onClick={() => handleTableClick(table)}
-                    className="group w-full h-40 bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden transform hover:scale-105 flex flex-col"
+                    className={`group w-full h-40 bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:scale-105 flex flex-col ${
+                      table.status === 'available' ? 'cursor-pointer' : 'cursor-default'
+                    }`}
                   >
                     {/* 桌台号码头部 - 更紧凑 */}
                     <div className={`${config.bgColor} text-white p-2 text-center relative flex-shrink-0`}>
@@ -497,6 +504,9 @@ const TablesPage: React.FC = () => {
                       {/* 状态标题 */}
                       <div className="text-center mb-2 flex-shrink-0">
                         <span className="text-gray-700 font-medium text-sm">{config.statusText}</span>
+                        {table.status === 'available' && (
+                          <div className="text-xs text-orange-600 mt-1">点击开台</div>
+                        )}
                       </div>
                       
                       {/* 详细信息区域 - 紧凑布局 */}
@@ -539,7 +549,7 @@ const TablesPage: React.FC = () => {
             <span className="text-gray-700 font-medium text-sm">状态：</span>
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 bg-purple-500 rounded shadow-sm" />
-              <span className="text-gray-600 text-sm">未开台</span>
+              <span className="text-gray-600 text-sm">未开台(点击开台)</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 bg-blue-500 rounded shadow-sm" />
