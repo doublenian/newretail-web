@@ -963,24 +963,27 @@ const TablesPage: React.FC = () => {
       <div className="flex-1 flex flex-col">
         {/* 顶部标题和返回按钮 */}
         <div className="bg-white p-4 border-b border-gray-200 shadow-sm">
-          {/* 页面标题 - 移到左上角 */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-4">
-              <button 
-                onClick={goBack}
-                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-                <span>返回</span>
-              </button>
-              <div className="h-6 w-px bg-gray-300" />
-              <h1 className="text-xl font-bold text-gray-800">{pageTitle}</h1>
-            </div>
+          {/* 返回按钮和页面标题 */}
+          <div className="flex items-center justify-between w-full mb-4">
+            {/* 最左侧：返回按钮 */}
+            <button 
+              onClick={goBack}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span>返回</span>
+            </button>
             
-            {filterMode === 'dining' && (
+            {/* 中间：页面标题 */}
+            <h1 className="text-xl font-bold text-gray-800 flex-1 text-center">{pageTitle}</h1>
+            
+            {/* 右侧：收银模式标签 */}
+            {filterMode === 'dining' ? (
               <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
                 收银模式
               </div>
+            ) : (
+              <div className="w-20"></div> // 占位元素，保持标题居中
             )}
           </div>
           
