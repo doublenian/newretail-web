@@ -417,26 +417,6 @@ const OrderDetailsPage: React.FC = () => {
                     桌台: {tableNumber} | 账单号: {billNumber}
                   </p>
                 </div>
-
-                {/* 操作按钮 */}
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => setShowPaymentModal(false)}
-                    className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
-                  >
-                    取消支付
-                  </button>
-                  <button
-                    onClick={completePayment}
-                    className={`flex-1 py-3 rounded-lg font-bold text-white transition-all ${
-                      selectedPaymentMethod === 'alipay'
-                        ? 'bg-blue-500 hover:bg-blue-600'
-                        : 'bg-green-500 hover:bg-green-600'
-                    }`}
-                  >
-                    支付完成
-                  </button>
-                </div>
               </div>
             </div>
           </div>
