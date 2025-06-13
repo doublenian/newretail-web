@@ -256,35 +256,48 @@ const TablesPage: React.FC = () => {
                 >
                   <button
                     onClick={() => handleTableClick(table)}
-                    className="group w-full bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden transform hover:scale-105"
+                    className="group w-full h-64 bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden transform hover:scale-105 flex flex-col"
                   >
-                    {/* 桌台号码头部 */}
-                    <div className={`${config.bgColor} text-white p-4 text-center relative`}>
+                    {/* 桌台号码头部 - 固定高度 */}
+                    <div className={`${config.bgColor} text-white p-4 text-center relative flex-shrink-0`}>
                       <div className="text-2xl font-bold">{table.number}</div>
                       {/* 装饰性渐变 */}
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                     </div>
                     
-                    {/* 状态信息区域 */}
-                    <div className="p-4 bg-gradient-to-b from-gray-50 to-white">
-                      <div className="text-center mb-2">
-                        <span className="text-gray-700 font-medium">{config.statusText}</span>
+                    {/* 状态信息区域 - 弹性填充剩余空间 */}
+                    <div className="flex-1 p-4 bg-gradient-to-b from-gray-50 to-white flex flex-col justify-center">
+                      {/* 状态标题 - 固定位置 */}
+                      <div className="text-center mb-4 flex-shrink-0">
+                        <span className="text-gray-700 font-medium text-lg">{config.statusText}</span>
                       </div>
                       
-                      {/* 详细信息 */}
-                      {table.duration && (
-                        <div className="text-center text-sm text-gray-600 mb-2 flex items-center justify-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {table.duration}
+                      {/* 详细信息区域 - 固定高度容器 */}
+                      <div className="flex-1 flex flex-col justify-center items-center space-y-2 min-h-[60px]">
+                        {/* 时长信息 */}
+                        <div className="h-6 flex items-center justify-center">
+                          {table.duration ? (
+                            <div className="text-sm text-gray-600 flex items-center gap-1">
+                              <Clock className="w-3 h-3" />
+                              {table.duration}
+                            </div>
+                          ) : (
+                            <div className="h-4"></div> // 占位元素保持高度一致
+                          )}
                         </div>
-                      )}
-                      
-                      {table.customerCount && (
-                        <div className="flex items-center justify-center gap-1 text-sm text-gray-600">
-                          <Users className="w-4 h-4" />
-                          <span>{table.customerCount}人</span>
+                        
+                        {/* 人数信息 */}
+                        <div className="h-6 flex items-center justify-center">
+                          {table.customerCount ? (
+                            <div className="text-sm text-gray-600 flex items-center gap-1">
+                              <Users className="w-4 h-4" />
+                              <span>{table.customerCount}人</span>
+                            </div>
+                          ) : (
+                            <div className="h-4"></div> // 占位元素保持高度一致
+                          )}
                         </div>
-                      )}
+                      </div>
                     </div>
                   </button>
                 </div>
