@@ -6,6 +6,7 @@ import CategoryPage from './pages/CategoryPage'
 import FunctionPage from './pages/FunctionPage'
 import TablesPage from './pages/TablesPage'
 import OrderingPage from './pages/OrderingPage'
+import OrderDetailsPage from './pages/OrderDetailsPage'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/function/:restaurantId" element={<FunctionPage />} />
         <Route path="/tables" element={<TablesPage />} />
         <Route path="/ordering/:tableNumber" element={<OrderingPage />} />
+        <Route path="/order-details/:tableNumber" element={<OrderDetailsPage />} />
       </Routes>
     </div>
   )

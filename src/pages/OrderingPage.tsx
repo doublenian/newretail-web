@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
 import { ArrowLeft, ShoppingCart, Plus, Minus, X } from 'lucide-react'
 
 interface MenuVariant {
@@ -44,11 +44,20 @@ interface MenuCategory {
   badge?: number
 }
 
+interface OrderingPageState {
+  existingCart?: CartItem[]
+}
+
 const OrderingPage: React.FC = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { tableNumber } = useParams()
   const [selectedCategory, setSelectedCategory] = useState('hot-sale')
-  const [cart, setCart] = useState<CartItem[]>([])
+  
+  // 从导航状态中获取已有购物车数据
+  const orderingState = location.state as OrderingPageState | null
+  const [cart, setCart] = useState<CartItem[]>(orderingState?.existingCart || [])
+  
   const [showCartModal, setShowCartModal] = useState(false)
   const [showVariantModal, setShowVariantModal] = useState(false)
   const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItem | null>(null)
@@ -759,7 +768,7 @@ const OrderingPage: React.FC = () => {
   }
 
   // 添加全局事件监听器
-  React.useEffect(() => {
+  useEffect(() => {
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove)
       document.addEventListener('mouseup', handleMouseUp)
@@ -777,11 +786,6 @@ const OrderingPage: React.FC = () => {
     navigate(-1)
   }
 
-  const goToCheckout = () => {
-    if (isDragging) return // 拖拽时不触发下单
-    console.log('Go to checkout with cart:', cart)
-  }
-
   // 点击购物车显示弹框
   const handleCartClick = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -795,6 +799,20 @@ const OrderingPage: React.FC = () => {
   const clearCart = () => {
     setCart([])
     setShowCartModal(false)
+  }
+
+  // 去下单 - 跳转到订单详情页
+  const goToCheckout = () => {
+    if (isDragging) return // 拖拽时不触发下单
+    console.log('Go to checkout with cart:', cart)
+    
+    // 跳转到订单详情页，传递购物车数据
+    navigate(`/order-details/${tableNumber}`, {
+      state: {
+        cart: cart,
+        tableNumber: tableNumber
+      }
+    })
   }
 
   return (
@@ -1275,5 +1293,3 @@ const OrderingPage: React.FC = () => {
     </div>
   )
 }
-
-export default OrderingPage
