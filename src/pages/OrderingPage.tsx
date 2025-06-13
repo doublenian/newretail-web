@@ -293,24 +293,26 @@ const OrderingPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 底部购物车 */}
+      {/* 底部购物车 - 按照图片样式设计 */}
       {getTotalQuantity() > 0 && (
-        <div className="bg-gray-800 text-white p-4 flex items-center justify-between shadow-lg">
-          <div className="flex items-center gap-4">
+        <div className="flex items-stretch h-14 shadow-lg">
+          {/* 左侧购物车信息 - 深色背景 */}
+          <div className="bg-gray-800 text-white flex items-center px-6 gap-4 flex-1">
             <div className="relative">
-              <ShoppingCart className="w-8 h-8 text-white" />
-              <div className="absolute -top-2 -right-2 w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center text-xs font-bold">
+              <ShoppingCart className="w-6 h-6 text-white" />
+              <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-xs font-bold text-white">
                 {getTotalQuantity()}
               </div>
             </div>
             <div>
-              <span className="text-lg font-bold">¥{getTotalPrice()}</span>
+              <span className="text-xl font-bold">¥{getTotalPrice()}</span>
             </div>
           </div>
           
+          {/* 右侧下单按钮 - 橙红色背景 */}
           <button
             onClick={goToCheckout}
-            className="bg-orange-500 hover:bg-orange-600 px-8 py-3 rounded-lg font-semibold transition-colors"
+            className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 font-bold text-lg transition-all duration-200 min-w-32"
           >
             去下单
           </button>
