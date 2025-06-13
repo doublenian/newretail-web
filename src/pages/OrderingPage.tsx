@@ -2,6 +2,21 @@ import React, { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, ShoppingCart, Plus, Minus, X } from 'lucide-react'
 
+interface MenuVariant {
+  id: string
+  name: string
+  price?: number // 如果有额外价格
+}
+
+interface MenuVariantCategory {
+  id: string
+  name: string
+  required: boolean
+  minSelect: number
+  maxSelect: number
+  options: MenuVariant[]
+}
+
 interface MenuItem {
   id: string
   name: string
@@ -12,10 +27,15 @@ interface MenuItem {
   isRecommended?: boolean
   soldCount?: number
   rating?: number
+  hasVariants?: boolean // 是否有规格选择
+  variants?: MenuVariantCategory[] // 规格分类
 }
 
 interface CartItem extends MenuItem {
   quantity: number
+  selectedVariants?: { [categoryId: string]: string[] } // 选中的规格
+  variantDescription?: string // 规格描述文本
+  finalPrice?: number // 最终价格（包含规格价格）
 }
 
 interface MenuCategory {
@@ -30,6 +50,9 @@ const OrderingPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('hot-sale')
   const [cart, setCart] = useState<CartItem[]>([])
   const [showCartModal, setShowCartModal] = useState(false)
+  const [showVariantModal, setShowVariantModal] = useState(false)
+  const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItem | null>(null)
+  const [selectedVariants, setSelectedVariants] = useState<{ [categoryId: string]: string[] }>({})
   
   // 拖拽相关状态
   const [isDragging, setIsDragging] = useState(false)
@@ -67,7 +90,35 @@ const OrderingPage: React.FC = () => {
       image: 'https://images.pexels.com/photos/361184/asparagus-steak-veal-cutlet-veal-361184.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
       category: 'hot-sale',
       description: '精选澳洲牛肉  剩余 3 份',
-      isRecommended: true
+      isRecommended: true,
+      hasVariants: true,
+      variants: [
+        {
+          id: 'doneness',
+          name: '熟度',
+          required: true,
+          minSelect: 1,
+          maxSelect: 1,
+          options: [
+            { id: 'rare', name: '三分熟' },
+            { id: 'medium-rare', name: '五分熟' },
+            { id: 'medium', name: '七分熟' },
+            { id: 'well-done', name: '全熟' }
+          ]
+        },
+        {
+          id: 'sauce',
+          name: '酱汁',
+          required: true,
+          minSelect: 1,
+          maxSelect: 1,
+          options: [
+            { id: 'black-pepper', name: '黑椒汁' },
+            { id: 'mushroom', name: '蘑菇汁' },
+            { id: 'red-wine', name: '红酒汁' }
+          ]
+        }
+      ]
     },
     {
       id: 'item3',
@@ -92,7 +143,34 @@ const OrderingPage: React.FC = () => {
       image: 'https://images.pexels.com/photos/1410235/pexels-photo-1410235.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
       category: 'hot-sale',
       description: '夏日必备  麻辣鲜香  剩余 5 份',
-      isRecommended: true
+      isRecommended: true,
+      hasVariants: true,
+      variants: [
+        {
+          id: 'spice-level',
+          name: '辣度',
+          required: true,
+          minSelect: 1,
+          maxSelect: 1,
+          options: [
+            { id: 'mild', name: '微辣' },
+            { id: 'medium', name: '中辣' },
+            { id: 'hot', name: '重辣' },
+            { id: 'extra-hot', name: '变态辣' }
+          ]
+        },
+        {
+          id: 'size',
+          name: '份量',
+          required: true,
+          minSelect: 1,
+          maxSelect: 1,
+          options: [
+            { id: 'small', name: '小份', price: 0 },
+            { id: 'large', name: '大份', price: 30 }
+          ]
+        }
+      ]
     },
     {
       id: 'item6',
@@ -150,6 +228,98 @@ const OrderingPage: React.FC = () => {
       image: 'https://images.pexels.com/photos/1640772/pexels-photo-1640772.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
       category: 'hot-sale',
       description: '经典家常菜  剩余 7 份'
+    },
+
+    // 经典套餐 - 添加有规格的套餐
+    {
+      id: 'set1',
+      name: '商务套餐A',
+      price: 128,
+      image: 'https://images.pexels.com/photos/1633578/pexels-photo-1633578.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'classic-set',
+      description: '主菜+汤+米饭+小菜',
+      hasVariants: true,
+      variants: [
+        {
+          id: 'salad',
+          name: '色拉',
+          required: false,
+          minSelect: 0,
+          maxSelect: 1,
+          options: [
+            { id: 'caesar', name: '大明虾沙拉' },
+            { id: 'chicken', name: '烟熏鸭胸沙拉' },
+            { id: 'thai-beef', name: '泰式牛肉沙拉' },
+            { id: 'thai-beef2', name: '泰式牛肉沙拉' }
+          ]
+        },
+        {
+          id: 'main-dish',
+          name: '主菜',
+          required: true,
+          minSelect: 1,
+          maxSelect: 1,
+          options: [
+            { id: 'crab-bun', name: '咖喱面包蟹' },
+            { id: 'beef-steak', name: '炭烤牛板腱' },
+            { id: 'thai-beef-salad', name: '泰式牛肉沙拉' }
+          ]
+        },
+        {
+          id: 'staple',
+          name: '主食',
+          required: true,
+          minSelect: 1,
+          maxSelect: 1,
+          options: [
+            { id: 'cream-pasta', name: '奶油蘑菇意面' },
+            { id: 'meat-pasta', name: '意大利肉酱面' },
+            { id: 'seafood-rice', name: '番茄海鲜烩饭' },
+            { id: 'meat-pasta2', name: '意大利肉酱面' }
+          ]
+        },
+        {
+          id: 'soup',
+          name: '汤品',
+          required: true,
+          minSelect: 1,
+          maxSelect: 1,
+          options: [
+            { id: 'mushroom-soup', name: '奶油菌菇汤' },
+            { id: 'luo-song', name: '罗宋汤' },
+            { id: 'pumpkin-soup', name: '松子奶油南瓜汤' },
+            { id: 'bone-soup', name: '排骨汤' }
+          ]
+        },
+        {
+          id: 'dessert',
+          name: '甜品',
+          required: true,
+          minSelect: 1,
+          maxSelect: 1,
+          options: [
+            { id: 'pudding', name: '焦糖布丁' },
+            { id: 'tiramisu', name: '提拉米苏' },
+            { id: 'cake', name: '黑森林' }
+          ]
+        }
+      ]
+    },
+    {
+      id: 'set2',
+      name: '家庭套餐',
+      price: 288,
+      image: 'https://images.pexels.com/photos/361184/asparagus-steak-veal-cutlet-veal-361184.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'classic-set',
+      description: '3菜1汤  适合2-3人'
+    },
+    {
+      id: 'set3',
+      name: '情侣套餐',
+      price: 188,
+      image: 'https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
+      category: 'classic-set',
+      description: '浪漫双人餐  含红酒'
     },
 
     // 老板推荐
@@ -281,32 +451,6 @@ const OrderingPage: React.FC = () => {
       description: '清香爽口  营养丰富'
     },
 
-    // 经典套餐
-    {
-      id: 'set1',
-      name: '商务套餐A',
-      price: 128,
-      image: 'https://images.pexels.com/photos/1633578/pexels-photo-1633578.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      category: 'classic-set',
-      description: '主菜+汤+米饭+小菜'
-    },
-    {
-      id: 'set2',
-      name: '家庭套餐',
-      price: 288,
-      image: 'https://images.pexels.com/photos/361184/asparagus-steak-veal-cutlet-veal-361184.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      category: 'classic-set',
-      description: '3菜1汤  适合2-3人'
-    },
-    {
-      id: 'set3',
-      name: '情侣套餐',
-      price: 188,
-      image: 'https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop',
-      category: 'classic-set',
-      description: '浪漫双人餐  含红酒'
-    },
-
     // 特色烧烤
     {
       id: 'bbq1',
@@ -382,47 +526,195 @@ const OrderingPage: React.FC = () => {
   }
 
   // 添加到购物车
-  const addToCart = (item: MenuItem) => {
-    const existingItem = cart.find(cartItem => cartItem.id === item.id)
+  const addToCart = (item: MenuItem, variants?: { [categoryId: string]: string[] }) => {
+    // 计算最终价格
+    let finalPrice = item.price
+    let variantDescription = ''
+    
+    if (variants && item.variants) {
+      const descriptions: string[] = []
+      for (const categoryId in variants) {
+        const category = item.variants.find(v => v.id === categoryId)
+        if (category) {
+          const selectedOptions = variants[categoryId]
+          for (const optionId of selectedOptions) {
+            const option = category.options.find(o => o.id === optionId)
+            if (option) {
+              descriptions.push(option.name)
+              if (option.price) {
+                finalPrice += option.price
+              }
+            }
+          }
+        }
+      }
+      variantDescription = descriptions.join(', ')
+    }
+
+    // 生成唯一的cart item ID（包含规格信息）
+    const cartItemId = variants ? `${item.id}_${JSON.stringify(variants)}` : item.id
+    
+    const existingItem = cart.find(cartItem => 
+      cartItem.id === item.id && 
+      JSON.stringify(cartItem.selectedVariants) === JSON.stringify(variants)
+    )
+    
     if (existingItem) {
       setCart(cart.map(cartItem => 
-        cartItem.id === item.id 
+        cartItem.id === item.id && 
+        JSON.stringify(cartItem.selectedVariants) === JSON.stringify(variants)
           ? { ...cartItem, quantity: cartItem.quantity + 1 }
           : cartItem
       ))
     } else {
-      setCart([...cart, { ...item, quantity: 1 }])
+      setCart([...cart, { 
+        ...item, 
+        quantity: 1, 
+        selectedVariants: variants,
+        variantDescription,
+        finalPrice
+      }])
     }
   }
 
   // 从购物车减少
-  const removeFromCart = (itemId: string) => {
-    const existingItem = cart.find(cartItem => cartItem.id === itemId)
+  const removeFromCart = (itemId: string, variants?: { [categoryId: string]: string[] }) => {
+    const existingItem = cart.find(cartItem => 
+      cartItem.id === itemId && 
+      JSON.stringify(cartItem.selectedVariants) === JSON.stringify(variants)
+    )
+    
     if (existingItem && existingItem.quantity > 1) {
       setCart(cart.map(cartItem => 
-        cartItem.id === itemId 
+        cartItem.id === itemId && 
+        JSON.stringify(cartItem.selectedVariants) === JSON.stringify(variants)
           ? { ...cartItem, quantity: cartItem.quantity - 1 }
           : cartItem
       ))
     } else {
-      setCart(cart.filter(cartItem => cartItem.id !== itemId))
+      setCart(cart.filter(cartItem => 
+        !(cartItem.id === itemId && 
+          JSON.stringify(cartItem.selectedVariants) === JSON.stringify(variants))
+      ))
     }
   }
 
   // 获取商品在购物车中的数量
-  const getItemQuantity = (itemId: string) => {
-    const item = cart.find(cartItem => cartItem.id === itemId)
+  const getItemQuantity = (itemId: string, variants?: { [categoryId: string]: string[] }) => {
+    const item = cart.find(cartItem => 
+      cartItem.id === itemId && 
+      JSON.stringify(cartItem.selectedVariants) === JSON.stringify(variants)
+    )
     return item ? item.quantity : 0
   }
 
   // 计算购物车总价
   const getTotalPrice = () => {
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0)
+    return cart.reduce((total, item) => total + ((item.finalPrice || item.price) * item.quantity), 0)
   }
 
   // 计算购物车总数量
   const getTotalQuantity = () => {
     return cart.reduce((total, item) => total + item.quantity, 0)
+  }
+
+  // 处理菜品点击（加号按钮）
+  const handleMenuItemAdd = (item: MenuItem) => {
+    if (item.hasVariants && item.variants) {
+      // 有规格的菜品，显示规格选择弹框
+      setSelectedMenuItem(item)
+      setSelectedVariants({})
+      setShowVariantModal(true)
+    } else {
+      // 无规格的菜品，直接添加到购物车
+      addToCart(item)
+    }
+  }
+
+  // 处理规格选择
+  const handleVariantSelect = (categoryId: string, optionId: string) => {
+    const category = selectedMenuItem?.variants?.find(v => v.id === categoryId)
+    if (!category) return
+
+    const currentSelections = selectedVariants[categoryId] || []
+    
+    if (category.maxSelect === 1) {
+      // 单选
+      setSelectedVariants({
+        ...selectedVariants,
+        [categoryId]: [optionId]
+      })
+    } else {
+      // 多选
+      if (currentSelections.includes(optionId)) {
+        // 取消选择
+        const newSelections = currentSelections.filter(id => id !== optionId)
+        if (newSelections.length === 0) {
+          const { [categoryId]: removed, ...rest } = selectedVariants
+          setSelectedVariants(rest)
+        } else {
+          setSelectedVariants({
+            ...selectedVariants,
+            [categoryId]: newSelections
+          })
+        }
+      } else {
+        // 添加选择
+        if (currentSelections.length < category.maxSelect) {
+          setSelectedVariants({
+            ...selectedVariants,
+            [categoryId]: [...currentSelections, optionId]
+          })
+        }
+      }
+    }
+  }
+
+  // 检查规格选择是否完整
+  const isVariantSelectionComplete = () => {
+    if (!selectedMenuItem?.variants) return false
+    
+    for (const category of selectedMenuItem.variants) {
+      if (category.required) {
+        const selections = selectedVariants[category.id] || []
+        if (selections.length < category.minSelect) {
+          return false
+        }
+      }
+    }
+    return true
+  }
+
+  // 确认规格选择，添加到购物车
+  const confirmVariantSelection = () => {
+    if (selectedMenuItem && isVariantSelectionComplete()) {
+      addToCart(selectedMenuItem, selectedVariants)
+      setShowVariantModal(false)
+      setSelectedMenuItem(null)
+      setSelectedVariants({})
+    }
+  }
+
+  // 计算当前选择的价格
+  const getCurrentVariantPrice = () => {
+    if (!selectedMenuItem) return 0
+    
+    let price = selectedMenuItem.price
+    if (selectedMenuItem.variants) {
+      for (const categoryId in selectedVariants) {
+        const category = selectedMenuItem.variants.find(v => v.id === categoryId)
+        if (category) {
+          const selections = selectedVariants[categoryId]
+          for (const optionId of selections) {
+            const option = category.options.find(o => o.id === optionId)
+            if (option?.price) {
+              price += option.price
+            }
+          }
+        }
+      }
+    }
+    return price
   }
 
   // 拖拽开始
@@ -582,6 +874,11 @@ const OrderingPage: React.FC = () => {
                           推荐
                         </div>
                       )}
+                      {item.hasVariants && (
+                        <div className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold">
+                          多规格
+                        </div>
+                      )}
                     </div>
                     
                     {/* 菜品信息 */}
@@ -600,7 +897,7 @@ const OrderingPage: React.FC = () => {
                         
                         {/* 加减按钮 */}
                         <div className="flex items-center gap-2">
-                          {quantity > 0 && (
+                          {quantity > 0 && !item.hasVariants && (
                             <>
                               <button
                                 onClick={() => removeFromCart(item.id)}
@@ -614,7 +911,7 @@ const OrderingPage: React.FC = () => {
                             </>
                           )}
                           <button
-                            onClick={() => addToCart(item)}
+                            onClick={() => handleMenuItemAdd(item)}
                             className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors"
                           >
                             <Plus className="w-4 h-4 text-white" />
@@ -713,8 +1010,8 @@ const OrderingPage: React.FC = () => {
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {cart.map((item) => (
-                    <div key={item.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                  {cart.map((item, index) => (
+                    <div key={`${item.id}_${index}`} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
                       {/* 菜品图片 */}
                       <img 
                         src={item.image} 
@@ -728,13 +1025,16 @@ const OrderingPage: React.FC = () => {
                       {/* 菜品信息 */}
                       <div className="flex-1">
                         <h3 className="font-semibold text-gray-800 mb-1">{item.name}</h3>
-                        <p className="text-orange-600 font-bold">¥{item.price}</p>
+                        {item.variantDescription && (
+                          <p className="text-xs text-gray-500 mb-1">{item.variantDescription}</p>
+                        )}
+                        <p className="text-orange-600 font-bold">¥{item.finalPrice || item.price}</p>
                       </div>
                       
                       {/* 数量控制 */}
                       <div className="flex items-center gap-3">
                         <button
-                          onClick={() => removeFromCart(item.id)}
+                          onClick={() => removeFromCart(item.id, item.selectedVariants)}
                           className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors border"
                         >
                           <Minus className="w-4 h-4 text-gray-600" />
@@ -743,7 +1043,7 @@ const OrderingPage: React.FC = () => {
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() => addToCart(item)}
+                          onClick={() => addToCart(item, item.selectedVariants)}
                           className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors"
                         >
                           <Plus className="w-4 h-4 text-white" />
@@ -752,7 +1052,7 @@ const OrderingPage: React.FC = () => {
                       
                       {/* 小计 */}
                       <div className="text-right w-20">
-                        <p className="font-bold text-gray-800">¥{item.price * item.quantity}</p>
+                        <p className="font-bold text-gray-800">¥{(item.finalPrice || item.price) * item.quantity}</p>
                       </div>
                     </div>
                   ))}
@@ -787,6 +1087,149 @@ const OrderingPage: React.FC = () => {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* 规格选择弹框 */}
+      {showVariantModal && selectedMenuItem && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl max-w-6xl w-full mx-4 max-h-[90vh] flex shadow-2xl">
+            {/* 左侧规格选择区域 */}
+            <div className="flex-1 flex flex-col">
+              {/* 弹框头部 */}
+              <div className="flex items-center justify-between p-6 border-b border-gray-200">
+                <h2 className="text-xl font-bold text-gray-800">套餐规格选择</h2>
+                <button
+                  onClick={() => setShowVariantModal(false)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+                >
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
+
+              {/* 规格选择区域 */}
+              <div className="flex-1 overflow-y-auto p-6">
+                <div className="space-y-6">
+                  {selectedMenuItem.variants?.map((category) => (
+                    <div key={category.id}>
+                      <div className="flex items-center gap-2 mb-3">
+                        <h3 className="text-lg font-semibold text-gray-800">{category.name}：</h3>
+                        <span className="text-sm text-gray-500">
+                          {category.required ? '必选' : '可选'}
+                          {category.maxSelect === 1 ? '1样' : `最多${category.maxSelect}样`}
+                          {category.minSelect > 0 && category.minSelect !== category.maxSelect && `，最少${category.minSelect}样`}
+                        </span>
+                      </div>
+                      
+                      <div className="grid grid-cols-4 gap-3">
+                        {category.options.map((option) => {
+                          const isSelected = selectedVariants[category.id]?.includes(option.id) || false
+                          return (
+                            <button
+                              key={option.id}
+                              onClick={() => handleVariantSelect(category.id, option.id)}
+                              className={`p-3 rounded-lg border-2 text-left transition-all duration-200 ${
+                                isSelected
+                                  ? 'border-orange-500 bg-orange-50 text-orange-700'
+                                  : 'border-gray-200 hover:border-gray-300 bg-white'
+                              }`}
+                            >
+                              <div className="font-medium">{option.name}</div>
+                              {option.price && option.price > 0 && (
+                                <div className="text-sm text-orange-600 mt-1">+¥{option.price}</div>
+                              )}
+                              {/* 选中标记 */}
+                              {isSelected && (
+                                <div className="absolute top-1 right-1">
+                                  <div className="w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center">
+                                    <span className="text-white text-xs">✓</span>
+                                  </div>
+                                </div>
+                              )}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* 右侧菜品信息和确认区域 */}
+            <div className="w-80 border-l border-gray-200 flex flex-col">
+              {/* 菜品信息 */}
+              <div className="p-6">
+                <img 
+                  src={selectedMenuItem.image} 
+                  alt={selectedMenuItem.name}
+                  className="w-full h-48 object-cover rounded-lg mb-4"
+                  onError={(e) => {
+                    e.currentTarget.src = 'https://images.pexels.com/photos/1633578/pexels-photo-1633578.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'
+                  }}
+                />
+                
+                <h3 className="text-xl font-bold text-gray-800 mb-2">{selectedMenuItem.name}</h3>
+                
+                {/* 已选择的规格 */}
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium text-gray-600 mb-2">已选择：</h4>
+                  <div className="space-y-1">
+                    {Object.keys(selectedVariants).length === 0 ? (
+                      <p className="text-gray-400 text-sm">暂未选择</p>
+                    ) : (
+                      Object.entries(selectedVariants).map(([categoryId, optionIds]) => {
+                        const category = selectedMenuItem.variants?.find(v => v.id === categoryId)
+                        if (!category) return null
+                        
+                        return optionIds.map(optionId => {
+                          const option = category.options.find(o => o.id === optionId)
+                          if (!option) return null
+                          
+                          return (
+                            <div key={`${categoryId}_${optionId}`} className="text-sm text-gray-700">
+                              {option.name}
+                              {option.price && option.price > 0 && (
+                                <span className="text-orange-600 ml-1">+¥{option.price}</span>
+                              )}
+                            </div>
+                          )
+                        })
+                      })
+                    )}
+                  </div>
+                </div>
+
+                {/* 价格显示 */}
+                <div className="bg-gray-50 rounded-lg p-4 mb-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-lg font-semibold text-gray-800">价格：</span>
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-orange-600">¥{getCurrentVariantPrice()}</div>
+                      {getCurrentVariantPrice() !== selectedMenuItem.price && (
+                        <div className="text-sm text-gray-500">原价 ¥{selectedMenuItem.price}</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 确认按钮 */}
+              <div className="mt-auto p-6 border-t border-gray-200">
+                <button
+                  onClick={confirmVariantSelection}
+                  disabled={!isVariantSelectionComplete()}
+                  className={`w-full py-3 rounded-lg font-bold text-lg transition-all ${
+                    isVariantSelectionComplete()
+                      ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white hover:from-orange-600 hover:to-red-600'
+                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  选好了
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
