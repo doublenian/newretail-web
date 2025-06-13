@@ -79,6 +79,9 @@ const FunctionPage: React.FC = () => {
     } else if (functionId === 'reports') {
       // 跳转到报表页面
       navigate('/reports')
+    } else if (functionId === 'settings') {
+      // 跳转到系统配置页面
+      navigate('/settings')
     }
     // 这里可以添加导航到其他功能页面的逻辑
   }

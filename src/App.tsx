@@ -10,6 +10,7 @@ import OrderDetailsPage from './pages/OrderDetailsPage'
 import OrdersPage from './pages/OrdersPage'
 import StatisticsPage from './pages/StatisticsPage'
 import ReportsPage from './pages/ReportsPage'
+import SettingsPage from './pages/SettingsPage'
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/orders" element={<OrdersPage />} />
         <Route path="/statistics" element={<StatisticsPage />} />
         <Route path="/reports" element={<ReportsPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Routes>
     </div>
   )
