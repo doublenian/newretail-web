@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate, useLocation, useParams } from 'react-router-dom'
-import { ArrowLeft, Plus, Clock, Users, Receipt, Edit3, Smartphone, CreditCard, QrCode } from 'lucide-react'
+import { ArrowLeft, Plus, Clock, Users, Receipt, Edit3, Smartphone, CreditCard, QrCode, X } from 'lucide-react'
 
 interface CartItem {
   id: string
@@ -352,9 +352,17 @@ const OrderDetailsPage: React.FC = () => {
       {/* 支付方式选择弹框 */}
       {showPaymentModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl max-w-md w-full mx-4 overflow-hidden shadow-2xl">
+          <div className="bg-white rounded-2xl max-w-md w-full mx-4 overflow-hidden shadow-2xl relative">
+            {/* 右上角关闭按钮 */}
+            <button
+              onClick={() => setShowPaymentModal(false)}
+              className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
+
             {/* 弹框头部 */}
-            <div className="p-6 border-b border-gray-200">
+            <div className="p-6 border-b border-gray-200 pr-16">
               <h2 className="text-xl font-bold text-gray-800 text-center">选择支付方式</h2>
               <p className="text-center text-gray-600 mt-2">
                 支付金额：<span className="text-2xl font-bold text-orange-600">¥{getFinalPaymentAmount()}</span>
