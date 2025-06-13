@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Clock, Users, ArrowLeft, MapPin } from 'lucide-react'
+import { Clock, Users, ArrowLeft, MapPin, X, Plus, Minus } from 'lucide-react'
 
 interface TableStatus {
   id: string
@@ -34,6 +34,11 @@ const TablesPage: React.FC = () => {
   const navigate = useNavigate()
   const [selectedArea, setSelectedArea] = useState('floor2')
   const [selectedType, setSelectedType] = useState('small')
+  
+  // 开台弹框相关状态
+  const [showOpenTableModal, setShowOpenTableModal] = useState(false)
+  const [selectedTable, setSelectedTable] = useState<TableStatus | null>(null)
+  const [customerCount, setCustomerCount] = useState(2) // 默认2人
 
   // 模拟订单数据 - 根据桌台号生成不同的订单
   const getMockOrderData = (tableNumber: string): CartItem[] => {
@@ -819,8 +824,10 @@ const TablesPage: React.FC = () => {
     }
     
     if (table.status === 'available') {
-      // 如果是未开台状态，跳转到点餐页面
-      navigate(`/ordering/${table.number}`)
+      // 如果是未开台状态，显示开台弹框
+      setSelectedTable(table)
+      setCustomerCount(2) // 重置为默认人数
+      setShowOpenTableModal(true)
     } else if (table.status === 'dining') {
       // 如果是就餐中状态，跳转到订单详情页面，传递模拟订单数据
       const mockCart = getMockOrderData(table.number)
@@ -831,6 +838,25 @@ const TablesPage: React.FC = () => {
         }
       })
     }
+  }
+
+  // 确认开台
+  const confirmOpenTable = () => {
+    if (selectedTable) {
+      console.log('Opening table:', selectedTable.number, 'for', customerCount, 'customers')
+      // 跳转到点餐页面
+      navigate(`/ordering/${selectedTable.number}`)
+      // 关闭弹框
+      setShowOpenTableModal(false)
+      setSelectedTable(null)
+    }
+  }
+
+  // 取消开台
+  const cancelOpenTable = () => {
+    setShowOpenTableModal(false)
+    setSelectedTable(null)
+    setCustomerCount(2)
   }
 
   const goBack = () => {
@@ -1005,6 +1031,81 @@ const TablesPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* 开台弹框 */}
+      {showOpenTableModal && selectedTable && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl relative">
+            {/* 右上角关闭按钮 */}
+            <button
+              onClick={cancelOpenTable}
+              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
+
+            {/* 弹框内容 */}
+            <div className="pr-8">
+              <h3 className="text-xl font-bold text-gray-800 mb-4">开台确认</h3>
+              
+              {/* 桌台信息 */}
+              <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-purple-600 mb-2">
+                    {selectedTable.number}号桌
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    {selectedTable.type === 'small' && '小桌(2-4人)'}
+                    {selectedTable.type === 'large' && '大桌(6-8人)'}
+                    {selectedTable.type === 'private' && '包间(8-12人)'}
+                  </div>
+                </div>
+              </div>
+              
+              {/* 人数选择 */}
+              <div className="mb-6">
+                <h4 className="text-sm font-medium text-gray-700 mb-3">用餐人数：</h4>
+                <div className="flex items-center justify-center gap-4">
+                  <button
+                    onClick={() => setCustomerCount(Math.max(1, customerCount - 1))}
+                    className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors"
+                  >
+                    <Minus className="w-5 h-5 text-gray-600" />
+                  </button>
+                  <div className="w-20 text-center">
+                    <span className="text-3xl font-bold text-gray-800">
+                      {customerCount}
+                    </span>
+                    <div className="text-sm text-gray-500">人</div>
+                  </div>
+                  <button
+                    onClick={() => setCustomerCount(customerCount + 1)}
+                    className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors"
+                  >
+                    <Plus className="w-5 h-5 text-white" />
+                  </button>
+                </div>
+              </div>
+              
+              {/* 操作按钮 */}
+              <div className="flex gap-3">
+                <button
+                  onClick={cancelOpenTable}
+                  className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={confirmOpenTable}
+                  className="flex-1 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-bold hover:from-orange-600 hover:to-red-600 transition-all"
+                >
+                  确认开台
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
