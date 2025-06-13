@@ -22,7 +22,7 @@ const TablesPage: React.FC = () => {
   const [selectedArea, setSelectedArea] = useState('floor2')
   const [selectedType, setSelectedType] = useState('small')
 
-  // 模拟餐厅区域和桌台数据
+  // 模拟更多餐厅区域和桌台数据
   const restaurantAreas: RestaurantArea[] = [
     {
       id: 'floor2',
@@ -32,14 +32,14 @@ const TablesPage: React.FC = () => {
           id: 't001',
           number: '001',
           status: 'available',
-          type: 'large',
+          type: 'small',
         },
         {
           id: 't002',
           number: '002',
           status: 'dining',
           type: 'small',
-          duration: '4小时22分47秒',
+          duration: '2小时15分',
           customerCount: 4
         },
         {
@@ -53,21 +53,119 @@ const TablesPage: React.FC = () => {
           id: 't004',
           number: '004',
           status: 'available',
-          type: 'private',
+          type: 'small',
         },
         {
           id: 't005',
           number: '005',
           status: 'dining',
-          type: 'large',
-          duration: '1小时15分30秒',
-          customerCount: 6
+          type: 'small',
+          duration: '1小时30分',
+          customerCount: 3
         },
         {
           id: 't006',
           number: '006',
           status: 'available',
           type: 'small',
+        },
+        {
+          id: 't007',
+          number: '007',
+          status: 'dining',
+          type: 'small',
+          duration: '45分钟',
+          customerCount: 2
+        },
+        {
+          id: 't008',
+          number: '008',
+          status: 'occupied',
+          type: 'small',
+          customerCount: 4
+        },
+        {
+          id: 't009',
+          number: '009',
+          status: 'available',
+          type: 'small',
+        },
+        {
+          id: 't010',
+          number: '010',
+          status: 'dining',
+          type: 'small',
+          duration: '3小时05分',
+          customerCount: 6
+        },
+        {
+          id: 't011',
+          number: '011',
+          status: 'available',
+          type: 'small',
+        },
+        {
+          id: 't012',
+          number: '012',
+          status: 'occupied',
+          type: 'small',
+          customerCount: 3
+        },
+        {
+          id: 't013',
+          number: '013',
+          status: 'dining',
+          type: 'large',
+          duration: '1小时20分',
+          customerCount: 8
+        },
+        {
+          id: 't014',
+          number: '014',
+          status: 'available',
+          type: 'large',
+        },
+        {
+          id: 't015',
+          number: '015',
+          status: 'occupied',
+          type: 'large',
+          customerCount: 6
+        },
+        {
+          id: 't016',
+          number: '016',
+          status: 'available',
+          type: 'private',
+        },
+        {
+          id: 't017',
+          number: '017',
+          status: 'dining',
+          type: 'private',
+          duration: '2小时40分',
+          customerCount: 10
+        },
+        {
+          id: 't018',
+          number: '018',
+          status: 'occupied',
+          type: 'private',
+          customerCount: 8
+        },
+        {
+          id: 't019',
+          number: '019',
+          status: 'available',
+          type: 'private',
+        },
+        {
+          id: 't020',
+          number: '020',
+          status: 'dining',
+          type: 'private',
+          duration: '1小时55分',
+          customerCount: 12
         }
       ]
     },
@@ -79,9 +177,9 @@ const TablesPage: React.FC = () => {
           id: 't101',
           number: '101',
           status: 'dining',
-          type: 'large',
-          duration: '2小时30分15秒',
-          customerCount: 8
+          type: 'small',
+          duration: '30分钟',
+          customerCount: 2
         },
         {
           id: 't102',
@@ -93,8 +191,146 @@ const TablesPage: React.FC = () => {
           id: 't103',
           number: '103',
           status: 'occupied',
-          type: 'private',
+          type: 'small',
           customerCount: 4
+        },
+        {
+          id: 't104',
+          number: '104',
+          status: 'dining',
+          type: 'small',
+          duration: '1小时10分',
+          customerCount: 3
+        },
+        {
+          id: 't105',
+          number: '105',
+          status: 'available',
+          type: 'small',
+        },
+        {
+          id: 't106',
+          number: '106',
+          status: 'occupied',
+          type: 'small',
+          customerCount: 2
+        },
+        {
+          id: 't107',
+          number: '107',
+          status: 'dining',
+          type: 'large',
+          duration: '2小时25分',
+          customerCount: 8
+        },
+        {
+          id: 't108',
+          number: '108',
+          status: 'available',
+          type: 'large',
+        },
+        {
+          id: 't109',
+          number: '109',
+          status: 'occupied',
+          type: 'large',
+          customerCount: 6
+        },
+        {
+          id: 't110',
+          number: '110',
+          status: 'available',
+          type: 'private',
+        },
+        {
+          id: 't111',
+          number: '111',
+          status: 'dining',
+          type: 'private',
+          duration: '1小时45分',
+          customerCount: 8
+        },
+        {
+          id: 't112',
+          number: '112',
+          status: 'occupied',
+          type: 'private',
+          customerCount: 10
+        }
+      ]
+    },
+    {
+      id: 'floor3',
+      name: '三楼',
+      tables: [
+        {
+          id: 't201',
+          number: '201',
+          status: 'available',
+          type: 'small',
+        },
+        {
+          id: 't202',
+          number: '202',
+          status: 'dining',
+          type: 'small',
+          duration: '25分钟',
+          customerCount: 2
+        },
+        {
+          id: 't203',
+          number: '203',
+          status: 'available',
+          type: 'small',
+        },
+        {
+          id: 't204',
+          number: '204',
+          status: 'occupied',
+          type: 'small',
+          customerCount: 3
+        },
+        {
+          id: 't205',
+          number: '205',
+          status: 'dining',
+          type: 'large',
+          duration: '3小时15分',
+          customerCount: 10
+        },
+        {
+          id: 't206',
+          number: '206',
+          status: 'available',
+          type: 'large',
+        },
+        {
+          id: 't207',
+          number: '207',
+          status: 'occupied',
+          type: 'large',
+          customerCount: 8
+        },
+        {
+          id: 't208',
+          number: '208',
+          status: 'available',
+          type: 'private',
+        },
+        {
+          id: 't209',
+          number: '209',
+          status: 'dining',
+          type: 'private',
+          duration: '1小时35分',
+          customerCount: 12
+        },
+        {
+          id: 't210',
+          number: '210',
+          status: 'occupied',
+          type: 'private',
+          customerCount: 6
         }
       ]
     }
@@ -170,46 +406,38 @@ const TablesPage: React.FC = () => {
   return (
     <div className="h-full w-full bg-gray-100 flex">
       {/* 左侧区域选择 */}
-      <div className="w-64 bg-gradient-to-b from-gray-800 to-gray-900 flex flex-col shadow-2xl">
+      <div className="w-48 bg-gradient-to-b from-gray-800 to-gray-900 flex flex-col shadow-2xl">
         {/* 头部标题 */}
-        <div className="p-6 border-b border-gray-700">
-          <h2 className="text-white text-xl font-bold flex items-center gap-3">
-            <MapPin className="w-6 h-6 text-orange-400" />
+        <div className="p-4 border-b border-gray-700">
+          <h2 className="text-white text-lg font-bold flex items-center gap-2">
+            <MapPin className="w-5 h-5 text-orange-400" />
             餐厅区域
           </h2>
-          <p className="text-gray-400 text-sm mt-1">选择要管理的区域</p>
         </div>
 
         {/* 区域列表 */}
-        <div className="flex-1 p-4 space-y-3">
+        <div className="flex-1 p-3 space-y-2">
           {restaurantAreas.map((area, index) => (
             <button
               key={area.id}
               onClick={() => setSelectedArea(area.id)}
-              className={`group relative w-full text-left p-4 rounded-xl transition-all duration-300 transform hover:scale-105 ${
+              className={`group relative w-full text-left p-3 rounded-lg transition-all duration-300 ${
                 selectedArea === area.id
-                  ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/30'
+                  ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg'
                   : 'bg-gray-700/50 text-gray-300 hover:bg-gray-700 hover:text-white'
               }`}
-              style={{ animationDelay: `${index * 0.1}s` }}
             >
-              {/* 选中状态指示器 */}
-              {selectedArea === area.id && (
-                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-8 bg-white rounded-r-full" />
-              )}
-              
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-lg font-semibold block">{area.name}</span>
-                  <span className={`text-sm ${
+                  <span className="text-base font-semibold block">{area.name}</span>
+                  <span className={`text-xs ${
                     selectedArea === area.id ? 'text-white/80' : 'text-gray-400'
                   }`}>
                     {area.tables.length} 个桌台
                   </span>
                 </div>
                 
-                {/* 桌台数量标识 */}
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
                   selectedArea === area.id
                     ? 'bg-white/20 text-white'
                     : 'bg-orange-500 text-white'
@@ -225,15 +453,15 @@ const TablesPage: React.FC = () => {
       {/* 右侧内容区域 */}
       <div className="flex-1 flex flex-col">
         {/* 顶部桌台类型筛选 */}
-        <div className="bg-white p-6 border-b border-gray-200 shadow-sm">
-          <div className="flex gap-4">
+        <div className="bg-white p-4 border-b border-gray-200 shadow-sm">
+          <div className="flex gap-3">
             {tableTypes.map((type) => (
               <button
                 key={type.id}
                 onClick={() => setSelectedType(type.id)}
-                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 transform hover:scale-105 ${
+                className={`px-4 py-2 rounded-full font-medium transition-all duration-300 ${
                   selectedType === type.id
-                    ? 'bg-gradient-to-r from-red-400 to-red-500 text-white shadow-lg shadow-red-400/30'
+                    ? 'bg-gradient-to-r from-red-400 to-red-500 text-white shadow-lg'
                     : 'bg-gray-400 text-white hover:bg-gray-500'
                 }`}
               >
@@ -243,58 +471,57 @@ const TablesPage: React.FC = () => {
           </div>
         </div>
 
-        {/* 桌台网格 */}
-        <div className="flex-1 p-6 bg-gray-50">
-          <div className="grid grid-cols-4 gap-6">
+        {/* 桌台网格 - 增加列数和减少间距 */}
+        <div className="flex-1 p-4 bg-gray-50 overflow-y-auto">
+          <div className="grid grid-cols-6 gap-3">
             {getFilteredTables().map((table, index) => {
               const config = getStatusConfig(table.status)
               return (
                 <div 
                   key={table.id} 
                   className="w-full animate-slide-up"
-                  style={{ animationDelay: `${index * 0.1}s` }}
+                  style={{ animationDelay: `${index * 0.05}s` }}
                 >
                   <button
                     onClick={() => handleTableClick(table)}
-                    className="group w-full h-64 bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden transform hover:scale-105 flex flex-col"
+                    className="group w-full h-40 bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden transform hover:scale-105 flex flex-col"
                   >
-                    {/* 桌台号码头部 - 固定高度 */}
-                    <div className={`${config.bgColor} text-white p-4 text-center relative flex-shrink-0`}>
-                      <div className="text-2xl font-bold">{table.number}</div>
-                      {/* 装饰性渐变 */}
+                    {/* 桌台号码头部 - 更紧凑 */}
+                    <div className={`${config.bgColor} text-white p-2 text-center relative flex-shrink-0`}>
+                      <div className="text-xl font-bold">{table.number}</div>
                       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                     </div>
                     
-                    {/* 状态信息区域 - 弹性填充剩余空间 */}
-                    <div className="flex-1 p-4 bg-gradient-to-b from-gray-50 to-white flex flex-col justify-center">
-                      {/* 状态标题 - 固定位置 */}
-                      <div className="text-center mb-4 flex-shrink-0">
-                        <span className="text-gray-700 font-medium text-lg">{config.statusText}</span>
+                    {/* 状态信息区域 - 更紧凑 */}
+                    <div className="flex-1 p-2 bg-gradient-to-b from-gray-50 to-white flex flex-col justify-center">
+                      {/* 状态标题 */}
+                      <div className="text-center mb-2 flex-shrink-0">
+                        <span className="text-gray-700 font-medium text-sm">{config.statusText}</span>
                       </div>
                       
-                      {/* 详细信息区域 - 固定高度容器 */}
-                      <div className="flex-1 flex flex-col justify-center items-center space-y-2 min-h-[60px]">
+                      {/* 详细信息区域 - 紧凑布局 */}
+                      <div className="flex-1 flex flex-col justify-center items-center space-y-1">
                         {/* 时长信息 */}
-                        <div className="h-6 flex items-center justify-center">
+                        <div className="h-4 flex items-center justify-center">
                           {table.duration ? (
-                            <div className="text-sm text-gray-600 flex items-center gap-1">
+                            <div className="text-xs text-gray-600 flex items-center gap-1">
                               <Clock className="w-3 h-3" />
                               {table.duration}
                             </div>
                           ) : (
-                            <div className="h-4"></div> // 占位元素保持高度一致
+                            <div className="h-3"></div>
                           )}
                         </div>
                         
                         {/* 人数信息 */}
-                        <div className="h-6 flex items-center justify-center">
+                        <div className="h-4 flex items-center justify-center">
                           {table.customerCount ? (
-                            <div className="text-sm text-gray-600 flex items-center gap-1">
-                              <Users className="w-4 h-4" />
+                            <div className="text-xs text-gray-600 flex items-center gap-1">
+                              <Users className="w-3 h-3" />
                               <span>{table.customerCount}人</span>
                             </div>
                           ) : (
-                            <div className="h-4"></div> // 占位元素保持高度一致
+                            <div className="h-3"></div>
                           )}
                         </div>
                       </div>
@@ -306,23 +533,23 @@ const TablesPage: React.FC = () => {
           </div>
         </div>
 
-        {/* 底部状态说明 */}
-        <div className="bg-white p-6 border-t border-gray-200 shadow-lg">
-          <div className="flex items-center gap-8">
-            <span className="text-gray-700 font-medium">状态：</span>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-purple-500 rounded shadow-sm" />
-              <span className="text-gray-600">未开台</span>
+        {/* 底部状态说明 - 更紧凑 */}
+        <div className="bg-white p-3 border-t border-gray-200 shadow-lg">
+          <div className="flex items-center gap-6">
+            <span className="text-gray-700 font-medium text-sm">状态：</span>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-purple-500 rounded shadow-sm" />
+              <span className="text-gray-600 text-sm">未开台</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-blue-500 rounded shadow-sm" />
-              <span className="text-gray-600">已开台</span>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-blue-500 rounded shadow-sm" />
+              <span className="text-gray-600 text-sm">已开台</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-500 rounded shadow-sm" />
-              <span className="text-gray-600">就餐中</span>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-green-500 rounded shadow-sm" />
+              <span className="text-gray-600 text-sm">就餐中</span>
             </div>
-            <button className="ml-auto px-6 py-3 bg-gradient-to-r from-orange-400 to-red-400 text-white rounded-full font-medium hover:from-orange-500 hover:to-red-500 transition-all duration-300 transform hover:scale-105 shadow-lg">
+            <button className="ml-auto px-4 py-2 bg-gradient-to-r from-orange-400 to-red-400 text-white rounded-full font-medium hover:from-orange-500 hover:to-red-500 transition-all duration-300 transform hover:scale-105 shadow-lg text-sm">
               刷新
             </button>
           </div>
