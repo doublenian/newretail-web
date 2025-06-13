@@ -1293,3 +1293,5 @@ const OrderingPage: React.FC = () => {
     </div>
   )
 }
+
+export default OrderingPage
