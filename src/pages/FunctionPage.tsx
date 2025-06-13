@@ -73,6 +73,9 @@ const FunctionPage: React.FC = () => {
     } else if (functionId === 'orders') {
       // 跳转到订单管理页面
       navigate('/orders')
+    } else if (functionId === 'statistics') {
+      // 跳转到统计页面
+      navigate('/statistics')
     }
     // 这里可以添加导航到其他功能页面的逻辑
   }

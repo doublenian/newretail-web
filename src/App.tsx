@@ -8,6 +8,7 @@ import TablesPage from './pages/TablesPage'
 import OrderingPage from './pages/OrderingPage'
 import OrderDetailsPage from './pages/OrderDetailsPage'
 import OrdersPage from './pages/OrdersPage'
+import StatisticsPage from './pages/StatisticsPage'
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path="/ordering/:tableNumber" element={<OrderingPage />} />
         <Route path="/order-details/:tableNumber" element={<OrderDetailsPage />} />
         <Route path="/orders" element={<OrdersPage />} />
+        <Route path="/statistics" element={<StatisticsPage />} />
       </Routes>
     </div>
   )
