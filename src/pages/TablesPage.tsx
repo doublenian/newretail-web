@@ -280,16 +280,11 @@ const TablesPage: React.FC = () => {
                       )}
                       
                       {table.customerCount && (
-                        <div className="flex items-center justify-center gap-1 text-sm text-gray-600 mb-3">
+                        <div className="flex items-center justify-center gap-1 text-sm text-gray-600">
                           <Users className="w-4 h-4" />
                           <span>{table.customerCount}人</span>
                         </div>
                       )}
-                      
-                      {/* 底部装饰图标 */}
-                      <div className="flex justify-center">
-                        <div className="w-8 h-8 bg-gradient-to-r from-orange-400 to-red-400 transform rotate-45 rounded-sm group-hover:rotate-90 transition-transform duration-300" />
-                      </div>
                     </div>
                   </button>
                 </div>
