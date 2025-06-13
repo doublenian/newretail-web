@@ -29,6 +29,11 @@ const OrderingPage: React.FC = () => {
   const { tableNumber } = useParams()
   const [selectedCategory, setSelectedCategory] = useState('hot-sale')
   const [cart, setCart] = useState<CartItem[]>([])
+  
+  // 拖拽相关状态
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
+  const [position, setPosition] = useState({ x: 0, y: 0 })
 
   // 菜单分类
   const categories: MenuCategory[] = [
@@ -156,11 +161,60 @@ const OrderingPage: React.FC = () => {
     return cart.reduce((total, item) => total + item.quantity, 0)
   }
 
+  // 拖拽开始
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setIsDragging(true)
+    const rect = e.currentTarget.getBoundingClientRect()
+    setDragOffset({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    })
+  }
+
+  // 拖拽过程
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isDragging) return
+    
+    const newX = e.clientX - dragOffset.x
+    const newY = e.clientY - dragOffset.y
+    
+    // 限制在窗口范围内
+    const maxX = window.innerWidth - 200 // 购物车宽度大约200px
+    const maxY = window.innerHeight - 56 // 购物车高度大约56px
+    
+    setPosition({
+      x: Math.max(0, Math.min(newX, maxX)),
+      y: Math.max(0, Math.min(newY, maxY))
+    })
+  }
+
+  // 拖拽结束
+  const handleMouseUp = () => {
+    setIsDragging(false)
+  }
+
+  // 添加全局事件监听器
+  React.useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove)
+      document.addEventListener('mouseup', handleMouseUp)
+      document.body.style.userSelect = 'none' // 防止拖拽时选中文本
+      
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove)
+        document.removeEventListener('mouseup', handleMouseUp)
+        document.body.style.userSelect = ''
+      }
+    }
+  }, [isDragging, dragOffset])
+
   const goBack = () => {
     navigate(-1)
   }
 
   const goToCheckout = () => {
+    if (isDragging) return // 拖拽时不触发下单
     console.log('Go to checkout with cart:', cart)
   }
 
@@ -293,12 +347,25 @@ const OrderingPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 悬浮购物车 - 右下角 */}
+      {/* 可拖拽的悬浮购物车 */}
       {getTotalQuantity() > 0 && (
-        <div className="fixed bottom-6 right-6 z-50">
-          <div className="flex items-stretch h-14 shadow-2xl rounded-full overflow-hidden">
+        <div 
+          className={`fixed z-50 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+          style={{
+            left: position.x || 'auto',
+            top: position.y || 'auto',
+            right: position.x ? 'auto' : '24px',
+            bottom: position.y ? 'auto' : '24px',
+            transform: isDragging ? 'scale(1.05)' : 'scale(1)',
+            transition: isDragging ? 'none' : 'transform 0.2s ease'
+          }}
+          onMouseDown={handleMouseDown}
+        >
+          <div className={`flex items-stretch h-14 shadow-2xl rounded-full overflow-hidden ${
+            isDragging ? 'shadow-3xl' : ''
+          }`}>
             {/* 左侧购物车信息 - 深色背景 */}
-            <div className="bg-gray-800 text-white flex items-center pl-6 pr-4 gap-3">
+            <div className="bg-gray-800 text-white flex items-center pl-6 pr-4 gap-3 select-none">
               <div className="relative">
                 <ShoppingCart className="w-6 h-6 text-white" />
                 <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-xs font-bold text-white">
@@ -313,11 +380,19 @@ const OrderingPage: React.FC = () => {
             {/* 右侧下单按钮 - 橙红色背景 */}
             <button
               onClick={goToCheckout}
-              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-6 font-bold text-base transition-all duration-200 hover:scale-105"
+              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-6 font-bold text-base transition-all duration-200 select-none"
+              onMouseDown={(e) => e.stopPropagation()} // 防止按钮点击时触发拖拽
             >
               去下单
             </button>
           </div>
+          
+          {/* 拖拽提示 */}
+          {isDragging && (
+            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-2 py-1 rounded text-xs whitespace-nowrap">
+              拖拽到任意位置
+            </div>
+          )}
         </div>
       )}
     </div>
