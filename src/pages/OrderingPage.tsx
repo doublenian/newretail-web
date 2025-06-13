@@ -53,6 +53,7 @@ const OrderingPage: React.FC = () => {
   const [showVariantModal, setShowVariantModal] = useState(false)
   const [selectedMenuItem, setSelectedMenuItem] = useState<MenuItem | null>(null)
   const [selectedVariants, setSelectedVariants] = useState<{ [categoryId: string]: string[] }>({})
+  const [variantQuantity, setVariantQuantity] = useState(1) // 规格选择时的数量
   
   // 拖拽相关状态
   const [isDragging, setIsDragging] = useState(false)
@@ -526,7 +527,7 @@ const OrderingPage: React.FC = () => {
   }
 
   // 添加到购物车
-  const addToCart = (item: MenuItem, variants?: { [categoryId: string]: string[] }) => {
+  const addToCart = (item: MenuItem, variants?: { [categoryId: string]: string[] }, quantity: number = 1) => {
     // 计算最终价格
     let finalPrice = item.price
     let variantDescription = ''
@@ -563,13 +564,13 @@ const OrderingPage: React.FC = () => {
       setCart(cart.map(cartItem => 
         cartItem.id === item.id && 
         JSON.stringify(cartItem.selectedVariants) === JSON.stringify(variants)
-          ? { ...cartItem, quantity: cartItem.quantity + 1 }
+          ? { ...cartItem, quantity: cartItem.quantity + quantity }
           : cartItem
       ))
     } else {
       setCart([...cart, { 
         ...item, 
-        quantity: 1, 
+        quantity: quantity, 
         selectedVariants: variants,
         variantDescription,
         finalPrice
@@ -624,6 +625,7 @@ const OrderingPage: React.FC = () => {
       // 有规格的菜品，显示规格选择弹框
       setSelectedMenuItem(item)
       setSelectedVariants({})
+      setVariantQuantity(1) // 重置数量为1
       setShowVariantModal(true)
     } else {
       // 无规格的菜品，直接添加到购物车
@@ -688,14 +690,15 @@ const OrderingPage: React.FC = () => {
   // 确认规格选择，添加到购物车
   const confirmVariantSelection = () => {
     if (selectedMenuItem && isVariantSelectionComplete()) {
-      addToCart(selectedMenuItem, selectedVariants)
+      addToCart(selectedMenuItem, selectedVariants, variantQuantity)
       setShowVariantModal(false)
       setSelectedMenuItem(null)
       setSelectedVariants({})
+      setVariantQuantity(1)
     }
   }
 
-  // 计算当前选择的价格
+  // 计算当前选择的单价
   const getCurrentVariantPrice = () => {
     if (!selectedMenuItem) return 0
     
@@ -715,6 +718,11 @@ const OrderingPage: React.FC = () => {
       }
     }
     return price
+  }
+
+  // 计算当前选择的总价
+  const getCurrentVariantTotalPrice = () => {
+    return getCurrentVariantPrice() * variantQuantity
   }
 
   // 拖拽开始
@@ -1129,7 +1137,7 @@ const OrderingPage: React.FC = () => {
                             <button
                               key={option.id}
                               onClick={() => handleVariantSelect(category.id, option.id)}
-                              className={`p-3 rounded-lg border-2 text-left transition-all duration-200 ${
+                              className={`relative p-3 rounded-lg border-2 text-left transition-all duration-200 ${
                                 isSelected
                                   ? 'border-orange-500 bg-orange-50 text-orange-700'
                                   : 'border-gray-200 hover:border-gray-300 bg-white'
@@ -1201,15 +1209,44 @@ const OrderingPage: React.FC = () => {
                   </div>
                 </div>
 
+                {/* 数量选择 */}
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium text-gray-600 mb-3">数量：</h4>
+                  <div className="flex items-center gap-4">
+                    <button
+                      onClick={() => setVariantQuantity(Math.max(1, variantQuantity - 1))}
+                      className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors"
+                    >
+                      <Minus className="w-5 h-5 text-gray-600" />
+                    </button>
+                    <span className="w-12 text-center font-bold text-xl text-gray-800">
+                      {variantQuantity}
+                    </span>
+                    <button
+                      onClick={() => setVariantQuantity(variantQuantity + 1)}
+                      className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors"
+                    >
+                      <Plus className="w-5 h-5 text-white" />
+                    </button>
+                  </div>
+                </div>
+
                 {/* 价格显示 */}
                 <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-lg font-semibold text-gray-800">价格：</span>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-600">单价：</span>
                     <div className="text-right">
-                      <div className="text-2xl font-bold text-orange-600">¥{getCurrentVariantPrice()}</div>
+                      <div className="text-lg font-bold text-gray-800">¥{getCurrentVariantPrice()}</div>
                       {getCurrentVariantPrice() !== selectedMenuItem.price && (
-                        <div className="text-sm text-gray-500">原价 ¥{selectedMenuItem.price}</div>
+                        <div className="text-xs text-gray-500">原价 ¥{selectedMenuItem.price}</div>
                       )}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-base font-semibold text-gray-800">总价：</span>
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-orange-600">¥{getCurrentVariantTotalPrice()}</div>
+                      <div className="text-xs text-gray-500">{variantQuantity} × ¥{getCurrentVariantPrice()}</div>
                     </div>
                   </div>
                 </div>
