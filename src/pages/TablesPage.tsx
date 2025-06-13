@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Clock, Users, ArrowLeft, MapPin, X, Plus, Minus } from 'lucide-react'
 
 interface TableStatus {
@@ -30,8 +30,20 @@ interface CartItem {
   finalPrice?: number
 }
 
+interface TablesPageState {
+  filterMode?: 'dining' | 'all'
+  title?: string
+}
+
 const TablesPage: React.FC = () => {
   const navigate = useNavigate()
+  const location = useLocation()
+  
+  // 获取从路由传递的状态
+  const pageState = location.state as TablesPageState | null
+  const filterMode = pageState?.filterMode || 'all'
+  const pageTitle = pageState?.title || '桌台管理'
+  
   const [selectedArea, setSelectedArea] = useState('floor2')
   const [selectedType, setSelectedType] = useState('small')
   
@@ -756,11 +768,19 @@ const TablesPage: React.FC = () => {
     }
   ]
 
-  // 桌台类型统计
+  // 桌台类型统计 - 根据过滤模式调整
   const getTableTypeCount = (type: string) => {
     const currentArea = restaurantAreas.find(area => area.id === selectedArea)
     if (!currentArea) return 0
-    return currentArea.tables.filter(table => table.type === type).length
+    
+    let tables = currentArea.tables.filter(table => table.type === type)
+    
+    // 如果是收银模式，只统计就餐中的桌台
+    if (filterMode === 'dining') {
+      tables = tables.filter(table => table.status === 'dining')
+    }
+    
+    return tables.length
   }
 
   const tableTypes = [
@@ -807,29 +827,31 @@ const TablesPage: React.FC = () => {
     }
   }
 
-  // 过滤桌台
+  // 过滤桌台 - 添加收银模式过滤
   const getFilteredTables = () => {
     const currentArea = restaurantAreas.find(area => area.id === selectedArea)
     if (!currentArea) return []
     
-    return currentArea.tables.filter(table => table.type === selectedType)
+    let tables = currentArea.tables.filter(table => table.type === selectedType)
+    
+    // 如果是收银模式，只显示就餐中的桌台
+    if (filterMode === 'dining') {
+      tables = tables.filter(table => table.status === 'dining')
+    }
+    
+    return tables
   }
 
   const handleTableClick = (table: TableStatus) => {
     console.log('Selected table:', table)
     
-    // 维修中的桌台不可点击
+    // 收银模式下，维修中的桌台不可点击
     if (table.status === 'occupied') {
       return
     }
     
-    if (table.status === 'available') {
-      // 如果是未开台状态，显示开台弹框
-      setSelectedTable(table)
-      setCustomerCount(2) // 重置为默认人数
-      setShowOpenTableModal(true)
-    } else if (table.status === 'dining') {
-      // 如果是就餐中状态，跳转到订单详情页面，传递模拟订单数据
+    if (filterMode === 'dining') {
+      // 收银模式下，直接跳转到订单详情页面
       const mockCart = getMockOrderData(table.number)
       navigate(`/order-details/${table.number}`, {
         state: {
@@ -837,6 +859,23 @@ const TablesPage: React.FC = () => {
           tableNumber: table.number
         }
       })
+    } else {
+      // 普通桌台管理模式
+      if (table.status === 'available') {
+        // 如果是未开台状态，显示开台弹框
+        setSelectedTable(table)
+        setCustomerCount(2) // 重置为默认人数
+        setShowOpenTableModal(true)
+      } else if (table.status === 'dining') {
+        // 如果是就餐中状态，跳转到订单详情页面，传递模拟订单数据
+        const mockCart = getMockOrderData(table.number)
+        navigate(`/order-details/${table.number}`, {
+          state: {
+            cart: mockCart,
+            tableNumber: table.number
+          }
+        })
+      }
     }
   }
 
@@ -871,49 +910,81 @@ const TablesPage: React.FC = () => {
         <div className="p-4 border-b border-gray-700">
           <h2 className="text-white text-lg font-bold flex items-center gap-2">
             <MapPin className="w-5 h-5 text-orange-400" />
-            餐厅区域
+            {filterMode === 'dining' ? '收银桌台' : '餐厅区域'}
           </h2>
+          {filterMode === 'dining' && (
+            <p className="text-gray-400 text-sm mt-1">仅显示就餐中桌台</p>
+          )}
         </div>
 
         {/* 区域列表 */}
         <div className="flex-1 p-3 space-y-2">
-          {restaurantAreas.map((area, index) => (
-            <button
-              key={area.id}
-              onClick={() => setSelectedArea(area.id)}
-              className={`group relative w-full text-left p-3 rounded-lg transition-all duration-300 ${
-                selectedArea === area.id
-                  ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg'
-                  : 'bg-gray-700/50 text-gray-300 hover:bg-gray-700 hover:text-white'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="text-base font-semibold block">{area.name}</span>
-                  <span className={`text-xs ${
-                    selectedArea === area.id ? 'text-white/80' : 'text-gray-400'
-                  }`}>
-                    {area.tables.length} 个桌台
-                  </span>
-                </div>
-                
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+          {restaurantAreas.map((area, index) => {
+            // 计算该区域中符合条件的桌台数量
+            const areaTableCount = filterMode === 'dining' 
+              ? area.tables.filter(table => table.status === 'dining').length
+              : area.tables.length
+              
+            return (
+              <button
+                key={area.id}
+                onClick={() => setSelectedArea(area.id)}
+                className={`group relative w-full text-left p-3 rounded-lg transition-all duration-300 ${
                   selectedArea === area.id
-                    ? 'bg-white/20 text-white'
-                    : 'bg-orange-500 text-white'
-                }`}>
-                  {area.tables.length}
+                    ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg'
+                    : 'bg-gray-700/50 text-gray-300 hover:bg-gray-700 hover:text-white'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-base font-semibold block">{area.name}</span>
+                    <span className={`text-xs ${
+                      selectedArea === area.id ? 'text-white/80' : 'text-gray-400'
+                    }`}>
+                      {filterMode === 'dining' ? `${areaTableCount} 个就餐中` : `${areaTableCount} 个桌台`}
+                    </span>
+                  </div>
+                  
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                    selectedArea === area.id
+                      ? 'bg-white/20 text-white'
+                      : 'bg-orange-500 text-white'
+                  }`}>
+                    {areaTableCount}
+                  </div>
                 </div>
-              </div>
-            </button>
-          ))}
+              </button>
+            )
+          })}
         </div>
       </div>
 
       {/* 右侧内容区域 */}
       <div className="flex-1 flex flex-col">
-        {/* 顶部桌台类型筛选 */}
+        {/* 顶部标题和桌台类型筛选 */}
         <div className="bg-white p-4 border-b border-gray-200 shadow-sm">
+          {/* 页面标题 */}
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-4">
+              <button 
+                onClick={goBack}
+                className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+                <span>返回</span>
+              </button>
+              <div className="h-6 w-px bg-gray-300" />
+              <h1 className="text-xl font-bold text-gray-800">{pageTitle}</h1>
+            </div>
+            
+            {filterMode === 'dining' && (
+              <div className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
+                收银模式
+              </div>
+            )}
+          </div>
+          
+          {/* 桌台类型筛选 */}
           <div className="flex gap-3">
             {tableTypes.map((type) => (
               <button
@@ -931,100 +1002,135 @@ const TablesPage: React.FC = () => {
           </div>
         </div>
 
-        {/* 桌台网格 - 增加列数和减少间距 */}
+        {/* 桌台网格 */}
         <div className="flex-1 p-4 bg-gray-50 overflow-y-auto">
-          <div className="grid grid-cols-6 gap-3">
-            {getFilteredTables().map((table, index) => {
-              const config = getStatusConfig(table.status)
-              const isDisabled = table.status === 'occupied' // 维修中的桌台不可点击
-              
-              return (
-                <div 
-                  key={table.id} 
-                  className="w-full animate-slide-up"
-                  style={{ animationDelay: `${index * 0.05}s` }}
-                >
-                  <button
-                    onClick={() => handleTableClick(table)}
-                    disabled={isDisabled}
-                    className={`group w-full h-40 bg-white rounded-lg shadow-md transition-all duration-300 overflow-hidden flex flex-col ${
-                      isDisabled 
-                        ? 'cursor-not-allowed opacity-75' 
-                        : 'hover:shadow-xl cursor-pointer transform hover:scale-105'
-                    }`}
+          {getFilteredTables().length === 0 ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MapPin className="w-8 h-8 text-gray-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-600 mb-2">
+                  {filterMode === 'dining' ? '暂无就餐中的桌台' : '暂无桌台'}
+                </h3>
+                <p className="text-gray-500">
+                  {filterMode === 'dining' 
+                    ? '当前区域没有正在就餐的桌台' 
+                    : '当前区域暂时没有这种类型的桌台'
+                  }
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-6 gap-3">
+              {getFilteredTables().map((table, index) => {
+                const config = getStatusConfig(table.status)
+                const isDisabled = table.status === 'occupied' // 维修中的桌台不可点击
+                
+                return (
+                  <div 
+                    key={table.id} 
+                    className="w-full animate-slide-up"
+                    style={{ animationDelay: `${index * 0.05}s` }}
                   >
-                    {/* 桌台号码头部 - 更紧凑 */}
-                    <div className={`${config.bgColor} text-white p-2 text-center relative flex-shrink-0`}>
-                      <div className="text-xl font-bold">{table.number}</div>
-                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                    </div>
-                    
-                    {/* 状态信息区域 - 更紧凑 */}
-                    <div className="flex-1 p-2 bg-gradient-to-b from-gray-50 to-white flex flex-col justify-center">
-                      {/* 状态标题 */}
-                      <div className="text-center mb-2 flex-shrink-0">
-                        <span className="text-gray-700 font-medium text-sm">{config.statusText}</span>
-                        {table.status === 'available' && (
-                          <div className="text-xs text-orange-600 mt-1">点击开台</div>
-                        )}
-                        {table.status === 'dining' && (
-                          <div className="text-xs text-green-600 mt-1">点击查看订单</div>
-                        )}
-                        {table.status === 'occupied' && (
-                          <div className="text-xs text-red-600 mt-1">暂时停用</div>
-                        )}
+                    <button
+                      onClick={() => handleTableClick(table)}
+                      disabled={isDisabled}
+                      className={`group w-full h-40 bg-white rounded-lg shadow-md transition-all duration-300 overflow-hidden flex flex-col ${
+                        isDisabled 
+                          ? 'cursor-not-allowed opacity-75' 
+                          : 'hover:shadow-xl cursor-pointer transform hover:scale-105'
+                      }`}
+                    >
+                      {/* 桌台号码头部 */}
+                      <div className={`${config.bgColor} text-white p-2 text-center relative flex-shrink-0`}>
+                        <div className="text-xl font-bold">{table.number}</div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                       </div>
                       
-                      {/* 详细信息区域 - 紧凑布局 */}
-                      <div className="flex-1 flex flex-col justify-center items-center space-y-1">
-                        {/* 时长信息 */}
-                        <div className="h-4 flex items-center justify-center">
-                          {table.duration ? (
-                            <div className="text-xs text-gray-600 flex items-center gap-1">
-                              <Clock className="w-3 h-3" />
-                              {table.duration}
-                            </div>
-                          ) : (
-                            <div className="h-3"></div>
+                      {/* 状态信息区域 */}
+                      <div className="flex-1 p-2 bg-gradient-to-b from-gray-50 to-white flex flex-col justify-center">
+                        {/* 状态标题 */}
+                        <div className="text-center mb-2 flex-shrink-0">
+                          <span className="text-gray-700 font-medium text-sm">{config.statusText}</span>
+                          {filterMode === 'dining' && table.status === 'dining' && (
+                            <div className="text-xs text-green-600 mt-1">点击收银结算</div>
+                          )}
+                          {filterMode !== 'dining' && (
+                            <>
+                              {table.status === 'available' && (
+                                <div className="text-xs text-orange-600 mt-1">点击开台</div>
+                              )}
+                              {table.status === 'dining' && (
+                                <div className="text-xs text-green-600 mt-1">点击查看订单</div>
+                              )}
+                              {table.status === 'occupied' && (
+                                <div className="text-xs text-red-600 mt-1">暂时停用</div>
+                              )}
+                            </>
                           )}
                         </div>
                         
-                        {/* 人数信息 */}
-                        <div className="h-4 flex items-center justify-center">
-                          {table.customerCount && table.status !== 'occupied' ? (
-                            <div className="text-xs text-gray-600 flex items-center gap-1">
-                              <Users className="w-3 h-3" />
-                              <span>{table.customerCount}人</span>
-                            </div>
-                          ) : (
-                            <div className="h-3"></div>
-                          )}
+                        {/* 详细信息区域 */}
+                        <div className="flex-1 flex flex-col justify-center items-center space-y-1">
+                          {/* 时长信息 */}
+                          <div className="h-4 flex items-center justify-center">
+                            {table.duration ? (
+                              <div className="text-xs text-gray-600 flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {table.duration}
+                              </div>
+                            ) : (
+                              <div className="h-3"></div>
+                            )}
+                          </div>
+                          
+                          {/* 人数信息 */}
+                          <div className="h-4 flex items-center justify-center">
+                            {table.customerCount && table.status !== 'occupied' ? (
+                              <div className="text-xs text-gray-600 flex items-center gap-1">
+                                <Users className="w-3 h-3" />
+                                <span>{table.customerCount}人</span>
+                              </div>
+                            ) : (
+                              <div className="h-3"></div>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </button>
-                </div>
-              )
-            })}
-          </div>
+                    </button>
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </div>
 
-        {/* 底部状态说明 - 更紧凑 */}
+        {/* 底部状态说明 */}
         <div className="bg-white p-3 border-t border-gray-200 shadow-lg">
           <div className="flex items-center gap-6">
             <span className="text-gray-700 font-medium text-sm">状态：</span>
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-purple-500 rounded shadow-sm" />
-              <span className="text-gray-600 text-sm">未开台(点击开台)</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-red-500 rounded shadow-sm" />
-              <span className="text-gray-600 text-sm">维修中(暂时停用)</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-green-500 rounded shadow-sm" />
-              <span className="text-gray-600 text-sm">就餐中(点击查看订单)</span>
-            </div>
+            {filterMode === 'dining' ? (
+              <div className="flex items-center gap-1">
+                <div className="w-3 h-3 bg-green-500 rounded shadow-sm" />
+                <span className="text-gray-600 text-sm">就餐中(点击收银结算)</span>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 bg-purple-500 rounded shadow-sm" />
+                  <span className="text-gray-600 text-sm">未开台(点击开台)</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 bg-red-500 rounded shadow-sm" />
+                  <span className="text-gray-600 text-sm">维修中(暂时停用)</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <div className="w-3 h-3 bg-green-500 rounded shadow-sm" />
+                  <span className="text-gray-600 text-sm">就餐中(点击查看订单)</span>
+                </div>
+              </>
+            )}
             <button className="ml-auto px-4 py-2 bg-gradient-to-r from-orange-400 to-red-400 text-white rounded-full font-medium hover:from-orange-500 hover:to-red-500 transition-all duration-300 transform hover:scale-105 shadow-lg text-sm">
               刷新
             </button>
@@ -1032,8 +1138,8 @@ const TablesPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 开台弹框 */}
-      {showOpenTableModal && selectedTable && (
+      {/* 开台弹框 - 只在非收银模式下显示 */}
+      {showOpenTableModal && selectedTable && filterMode !== 'dining' && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl relative">
             {/* 右上角关闭按钮 */}

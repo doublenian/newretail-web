@@ -62,6 +62,14 @@ const FunctionPage: React.FC = () => {
     console.log(`Selected function: ${functionId}`)
     if (functionId === 'tables') {
       navigate('/tables')
+    } else if (functionId === 'cashier') {
+      // 跳转到桌台页面，但只显示就餐中的桌台
+      navigate('/tables', { 
+        state: { 
+          filterMode: 'dining', 
+          title: '收银结算 - 选择桌台' 
+        } 
+      })
     }
     // 这里可以添加导航到其他功能页面的逻辑
   }
