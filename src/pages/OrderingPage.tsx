@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, ShoppingCart, Plus, Minus } from 'lucide-react'
+import { ArrowLeft, ShoppingCart, Plus, Minus, X } from 'lucide-react'
 
 interface MenuItem {
   id: string
@@ -29,6 +29,7 @@ const OrderingPage: React.FC = () => {
   const { tableNumber } = useParams()
   const [selectedCategory, setSelectedCategory] = useState('hot-sale')
   const [cart, setCart] = useState<CartItem[]>([])
+  const [showCartModal, setShowCartModal] = useState(false)
   
   // 拖拽相关状态
   const [isDragging, setIsDragging] = useState(false)
@@ -481,6 +482,21 @@ const OrderingPage: React.FC = () => {
     console.log('Go to checkout with cart:', cart)
   }
 
+  // 点击购物车显示弹框
+  const handleCartClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    if (!isDragging) {
+      setShowCartModal(true)
+    }
+  }
+
+  // 清空购物车
+  const clearCart = () => {
+    setCart([])
+    setShowCartModal(false)
+  }
+
   return (
     <div className="h-full w-full bg-gray-50 flex flex-col">
       {/* 顶部导航栏 */}
@@ -631,8 +647,12 @@ const OrderingPage: React.FC = () => {
           <div className={`flex items-stretch h-14 shadow-2xl rounded-full overflow-hidden ${
             isDragging ? 'shadow-3xl' : ''
           }`}>
-            {/* 左侧购物车信息 - 深色背景 */}
-            <div className="bg-gray-800 text-white flex items-center pl-6 pr-4 gap-3 select-none">
+            {/* 左侧购物车信息 - 深色背景，可点击 */}
+            <div 
+              className="bg-gray-800 text-white flex items-center pl-6 pr-4 gap-3 select-none cursor-pointer hover:bg-gray-700 transition-colors"
+              onClick={handleCartClick}
+              onMouseDown={(e) => e.stopPropagation()} // 防止点击时触发拖拽
+            >
               <div className="relative">
                 <ShoppingCart className="w-6 h-6 text-white" />
                 <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-xs font-bold text-white">
@@ -660,6 +680,114 @@ const OrderingPage: React.FC = () => {
               拖拽到任意位置
             </div>
           )}
+        </div>
+      )}
+
+      {/* 购物车弹框 */}
+      {showCartModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl max-w-2xl w-full mx-4 max-h-[80vh] flex flex-col shadow-2xl">
+            {/* 弹框头部 */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <div className="flex items-center gap-3">
+                <ShoppingCart className="w-6 h-6 text-orange-500" />
+                <h2 className="text-xl font-bold text-gray-800">购物车</h2>
+                <span className="bg-orange-100 text-orange-600 px-2 py-1 rounded-full text-sm font-medium">
+                  {getTotalQuantity()}件商品
+                </span>
+              </div>
+              <button
+                onClick={() => setShowCartModal(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+
+            {/* 购物车商品列表 */}
+            <div className="flex-1 overflow-y-auto p-6">
+              {cart.length === 0 ? (
+                <div className="text-center py-12">
+                  <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-500">购物车为空</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {cart.map((item) => (
+                    <div key={item.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                      {/* 菜品图片 */}
+                      <img 
+                        src={item.image} 
+                        alt={item.name}
+                        className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                        onError={(e) => {
+                          e.currentTarget.src = 'https://images.pexels.com/photos/1633578/pexels-photo-1633578.jpeg?auto=compress&cs=tinysrgb&w=400&h=300&fit=crop'
+                        }}
+                      />
+                      
+                      {/* 菜品信息 */}
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-800 mb-1">{item.name}</h3>
+                        <p className="text-orange-600 font-bold">¥{item.price}</p>
+                      </div>
+                      
+                      {/* 数量控制 */}
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => removeFromCart(item.id)}
+                          className="w-8 h-8 bg-white rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors border"
+                        >
+                          <Minus className="w-4 h-4 text-gray-600" />
+                        </button>
+                        <span className="w-8 text-center font-semibold text-gray-800">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => addToCart(item)}
+                          className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors"
+                        >
+                          <Plus className="w-4 h-4 text-white" />
+                        </button>
+                      </div>
+                      
+                      {/* 小计 */}
+                      <div className="text-right w-20">
+                        <p className="font-bold text-gray-800">¥{item.price * item.quantity}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* 底部操作区域 */}
+            {cart.length > 0 && (
+              <div className="border-t border-gray-200 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-lg font-semibold text-gray-800">合计:</span>
+                  <span className="text-2xl font-bold text-orange-600">¥{getTotalPrice()}</span>
+                </div>
+                
+                <div className="flex gap-3">
+                  <button
+                    onClick={clearCart}
+                    className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                  >
+                    清空购物车
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowCartModal(false)
+                      goToCheckout()
+                    }}
+                    className="flex-1 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-bold hover:from-orange-600 hover:to-red-600 transition-all"
+                  >
+                    立即下单
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
