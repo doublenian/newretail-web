@@ -1167,8 +1167,8 @@ const OrderingPage: React.FC = () => {
 
             {/* 右侧菜品信息和确认区域 */}
             <div className="w-80 border-l border-gray-200 flex flex-col">
-              {/* 菜品信息 */}
-              <div className="p-6">
+              {/* 菜品信息区域 - 可滚动 */}
+              <div className="flex-1 overflow-y-auto p-6">
                 <img 
                   src={selectedMenuItem.image} 
                   alt={selectedMenuItem.name}
@@ -1252,8 +1252,8 @@ const OrderingPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* 确认按钮 */}
-              <div className="mt-auto p-6 border-t border-gray-200">
+              {/* 确认按钮 - 固定在底部 */}
+              <div className="flex-shrink-0 p-6 border-t border-gray-200 bg-white">
                 <button
                   onClick={confirmVariantSelection}
                   disabled={!isVariantSelectionComplete()}
