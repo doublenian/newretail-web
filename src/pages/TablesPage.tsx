@@ -786,8 +786,8 @@ const TablesPage: React.FC = () => {
         }
       case 'occupied':
         return {
-          bgColor: 'bg-blue-500',
-          statusText: '已开台'
+          bgColor: 'bg-red-500',
+          statusText: '维修中'
         }
       case 'dining':
         return {
@@ -813,6 +813,11 @@ const TablesPage: React.FC = () => {
   const handleTableClick = (table: TableStatus) => {
     console.log('Selected table:', table)
     
+    // 维修中的桌台不可点击
+    if (table.status === 'occupied') {
+      return
+    }
+    
     if (table.status === 'available') {
       // 如果是未开台状态，跳转到点餐页面
       navigate(`/ordering/${table.number}`)
@@ -825,10 +830,6 @@ const TablesPage: React.FC = () => {
           tableNumber: table.number
         }
       })
-    } else if (table.status === 'occupied') {
-      // 如果是已开台状态，可以显示提示或跳转到相应页面
-      console.log(`桌台 ${table.number} 已开台，可以添加相应的处理逻辑`)
-      // 例如：显示桌台详情、开始点餐等
     }
   }
 
@@ -909,6 +910,8 @@ const TablesPage: React.FC = () => {
           <div className="grid grid-cols-6 gap-3">
             {getFilteredTables().map((table, index) => {
               const config = getStatusConfig(table.status)
+              const isDisabled = table.status === 'occupied' // 维修中的桌台不可点击
+              
               return (
                 <div 
                   key={table.id} 
@@ -917,7 +920,12 @@ const TablesPage: React.FC = () => {
                 >
                   <button
                     onClick={() => handleTableClick(table)}
-                    className={`group w-full h-40 bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:scale-105 flex flex-col cursor-pointer`}
+                    disabled={isDisabled}
+                    className={`group w-full h-40 bg-white rounded-lg shadow-md transition-all duration-300 overflow-hidden flex flex-col ${
+                      isDisabled 
+                        ? 'cursor-not-allowed opacity-75' 
+                        : 'hover:shadow-xl cursor-pointer transform hover:scale-105'
+                    }`}
                   >
                     {/* 桌台号码头部 - 更紧凑 */}
                     <div className={`${config.bgColor} text-white p-2 text-center relative flex-shrink-0`}>
@@ -937,7 +945,7 @@ const TablesPage: React.FC = () => {
                           <div className="text-xs text-green-600 mt-1">点击查看订单</div>
                         )}
                         {table.status === 'occupied' && (
-                          <div className="text-xs text-blue-600 mt-1">点击管理</div>
+                          <div className="text-xs text-red-600 mt-1">暂时停用</div>
                         )}
                       </div>
                       
@@ -957,7 +965,7 @@ const TablesPage: React.FC = () => {
                         
                         {/* 人数信息 */}
                         <div className="h-4 flex items-center justify-center">
-                          {table.customerCount ? (
+                          {table.customerCount && table.status !== 'occupied' ? (
                             <div className="text-xs text-gray-600 flex items-center gap-1">
                               <Users className="w-3 h-3" />
                               <span>{table.customerCount}人</span>
@@ -984,8 +992,8 @@ const TablesPage: React.FC = () => {
               <span className="text-gray-600 text-sm">未开台(点击开台)</span>
             </div>
             <div className="flex items-center gap-1">
-              <div className="w-3 h-3 bg-blue-500 rounded shadow-sm" />
-              <span className="text-gray-600 text-sm">已开台(点击管理)</span>
+              <div className="w-3 h-3 bg-red-500 rounded shadow-sm" />
+              <span className="text-gray-600 text-sm">维修中(暂时停用)</span>
             </div>
             <div className="flex items-center gap-1">
               <div className="w-3 h-3 bg-green-500 rounded shadow-sm" />
