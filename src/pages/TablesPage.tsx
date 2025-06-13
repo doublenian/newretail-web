@@ -223,14 +223,6 @@ const TablesPage: React.FC = () => {
             </button>
           ))}
         </div>
-
-        {/* 底部装饰 */}
-        <div className="p-4 border-t border-gray-700">
-          <div className="text-center">
-            <div className="w-12 h-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-full mx-auto mb-2" />
-            <p className="text-gray-400 text-xs">桌台管理系统</p>
-          </div>
-        </div>
       </div>
 
       {/* 右侧内容区域 */}
