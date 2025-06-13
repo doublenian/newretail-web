@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, FileText, BarChart3, PieChart, TrendingUp, Download, Calendar, Filter, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ArrowLeft, FileText, BarChart3, PieChart, TrendingUp, Download, Calendar, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface ReportCategory {
   id: string
@@ -25,6 +25,11 @@ interface TableData {
   paymentMethod: string
 }
 
+interface DateRange {
+  startDate: string
+  endDate: string
+}
+
 const ReportsPage: React.FC = () => {
   const navigate = useNavigate()
   const [selectedCategory, setSelectedCategory] = useState('financial')
@@ -32,6 +37,11 @@ const ReportsPage: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(20)
+  const [showDatePicker, setShowDatePicker] = useState(false)
+  const [dateRange, setDateRange] = useState<DateRange>({
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date().toISOString().split('T')[0]
+  })
 
   // 模拟表格数据
   const mockTableData: TableData[] = Array.from({ length: 150 }, (_, index) => ({
@@ -99,6 +109,16 @@ const ReportsPage: React.FC = () => {
     }
   ]
 
+  // 快速日期选择选项
+  const quickDateOptions = [
+    { label: '今天', value: 'today' },
+    { label: '昨天', value: 'yesterday' },
+    { label: '本周', value: 'thisWeek' },
+    { label: '上周', value: 'lastWeek' },
+    { label: '本月', value: 'thisMonth' },
+    { label: '上月', value: 'lastMonth' }
+  ]
+
   // 获取当前选中分类的报表
   const getCurrentCategoryReports = () => {
     const category = reportCategories.find(cat => cat.id === selectedCategory)
@@ -116,6 +136,60 @@ const ReportsPage: React.FC = () => {
         return <PieChart className="w-5 h-5" />
       default:
         return <FileText className="w-5 h-5" />
+    }
+  }
+
+  // 处理快速日期选择
+  const handleQuickDateSelect = (option: string) => {
+    const today = new Date()
+    let startDate = new Date()
+    let endDate = new Date()
+
+    switch (option) {
+      case 'today':
+        startDate = endDate = today
+        break
+      case 'yesterday':
+        startDate = endDate = new Date(today.getTime() - 24 * 60 * 60 * 1000)
+        break
+      case 'thisWeek':
+        const dayOfWeek = today.getDay()
+        const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1
+        startDate = new Date(today.getTime() - diffToMonday * 24 * 60 * 60 * 1000)
+        endDate = today
+        break
+      case 'lastWeek':
+        const lastWeekEnd = new Date(today.getTime() - today.getDay() * 24 * 60 * 60 * 1000)
+        const lastWeekStart = new Date(lastWeekEnd.getTime() - 6 * 24 * 60 * 60 * 1000)
+        startDate = lastWeekStart
+        endDate = lastWeekEnd
+        break
+      case 'thisMonth':
+        startDate = new Date(today.getFullYear(), today.getMonth(), 1)
+        endDate = today
+        break
+      case 'lastMonth':
+        const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1)
+        const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0)
+        startDate = lastMonth
+        endDate = lastMonthEnd
+        break
+    }
+
+    setDateRange({
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0]
+    })
+  }
+
+  // 应用时间筛选
+  const applyDateFilter = () => {
+    console.log('应用时间筛选:', dateRange)
+    // 这里可以添加实际的数据筛选逻辑
+    setShowDatePicker(false)
+    // 重新生成报表数据
+    if (selectedReport) {
+      generateReport(selectedReport)
     }
   }
 
@@ -148,7 +222,7 @@ const ReportsPage: React.FC = () => {
     // 模拟报表生成过程
     setTimeout(() => {
       setIsGenerating(false)
-      console.log('Generated report:', report.id)
+      console.log('Generated report:', report.id, 'with date range:', dateRange)
     }, 1500)
   }
 
@@ -256,12 +330,7 @@ const ReportsPage: React.FC = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               {selectedReport ? (
-                <>
-                  <h2 className="text-lg font-semibold text-gray-800">{selectedReport.name}</h2>
-                  <span className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full">
-                    实时数据
-                  </span>
-                </>
+                <h2 className="text-lg font-semibold text-gray-800">{selectedReport.name}</h2>
               ) : (
                 <h2 className="text-lg font-semibold text-gray-800">请选择报表</h2>
               )}
@@ -269,14 +338,88 @@ const ReportsPage: React.FC = () => {
             
             {selectedReport && (
               <div className="flex items-center gap-3">
-                <button className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
-                  <Calendar className="w-4 h-4" />
-                  <span>时间筛选</span>
-                </button>
-                <button className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
-                  <Filter className="w-4 h-4" />
-                  <span>筛选条件</span>
-                </button>
+                {/* 时间筛选按钮 */}
+                <div className="relative">
+                  <button
+                    onClick={() => setShowDatePicker(!showDatePicker)}
+                    className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors border border-gray-300"
+                  >
+                    <Calendar className="w-4 h-4" />
+                    <span>
+                      {dateRange.startDate === dateRange.endDate 
+                        ? dateRange.startDate 
+                        : `${dateRange.startDate} 至 ${dateRange.endDate}`
+                      }
+                    </span>
+                  </button>
+
+                  {/* 时间选择弹框 */}
+                  {showDatePicker && (
+                    <div className="absolute top-full right-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                      <div className="p-4">
+                        <h3 className="font-medium text-gray-800 mb-4">选择时间范围</h3>
+                        
+                        {/* 快速选择 */}
+                        <div className="mb-4">
+                          <p className="text-sm text-gray-600 mb-2">快速选择：</p>
+                          <div className="grid grid-cols-3 gap-2">
+                            {quickDateOptions.map((option) => (
+                              <button
+                                key={option.value}
+                                onClick={() => handleQuickDateSelect(option.value)}
+                                className="px-3 py-2 text-sm border border-gray-200 rounded hover:border-orange-300 hover:bg-orange-50 transition-colors"
+                              >
+                                {option.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* 自定义日期范围 */}
+                        <div className="mb-4">
+                          <p className="text-sm text-gray-600 mb-2">自定义范围：</p>
+                          <div className="space-y-3">
+                            <div>
+                              <label className="block text-xs text-gray-500 mb-1">开始日期</label>
+                              <input
+                                type="date"
+                                value={dateRange.startDate}
+                                onChange={(e) => setDateRange({ ...dateRange, startDate: e.target.value })}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs text-gray-500 mb-1">结束日期</label>
+                              <input
+                                type="date"
+                                value={dateRange.endDate}
+                                onChange={(e) => setDateRange({ ...dateRange, endDate: e.target.value })}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-orange-500"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* 操作按钮 */}
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setShowDatePicker(false)}
+                            className="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                          >
+                            取消
+                          </button>
+                          <button
+                            onClick={applyDateFilter}
+                            className="flex-1 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                          >
+                            确认
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <button className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
                   <RefreshCw className="w-4 h-4" />
                   <span>刷新数据</span>
@@ -309,6 +452,10 @@ const ReportsPage: React.FC = () => {
                     <h3 className="font-semibold text-gray-800">{selectedReport.name}</h3>
                     <p className="text-sm text-gray-600 mt-1">
                       生成时间: {new Date().toLocaleString('zh-CN')} | 
+                      时间范围: {dateRange.startDate === dateRange.endDate 
+                        ? dateRange.startDate 
+                        : `${dateRange.startDate} 至 ${dateRange.endDate}`
+                      } | 
                       共 {mockTableData.length} 条记录
                     </p>
                   </div>
@@ -495,6 +642,14 @@ const ReportsPage: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* 点击外部关闭日期选择器 */}
+      {showDatePicker && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setShowDatePicker(false)}
+        />
+      )}
     </div>
   )
 }
