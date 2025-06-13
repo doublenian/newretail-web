@@ -991,22 +991,22 @@ const OrderingPage: React.FC = () => {
       {/* 购物车弹框 */}
       {showCartModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl max-w-2xl w-full mx-4 max-h-[80vh] flex flex-col shadow-2xl">
+          <div className="bg-white rounded-2xl max-w-2xl w-full mx-4 max-h-[80vh] flex flex-col shadow-2xl relative">
+            {/* 右上角关闭按钮 */}
+            <button
+              onClick={() => setShowCartModal(false)}
+              className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
+
             {/* 弹框头部 */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <div className="flex items-center gap-3">
-                <ShoppingCart className="w-6 h-6 text-orange-500" />
-                <h2 className="text-xl font-bold text-gray-800">购物车</h2>
-                <span className="bg-orange-100 text-orange-600 px-2 py-1 rounded-full text-sm font-medium">
-                  {getTotalQuantity()}件商品
-                </span>
-              </div>
-              <button
-                onClick={() => setShowCartModal(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
-              >
-                <X className="w-5 h-5 text-gray-500" />
-              </button>
+            <div className="flex items-center gap-3 p-6 border-b border-gray-200 pr-16">
+              <ShoppingCart className="w-6 h-6 text-orange-500" />
+              <h2 className="text-xl font-bold text-gray-800">购物车</h2>
+              <span className="bg-orange-100 text-orange-600 px-2 py-1 rounded-full text-sm font-medium">
+                {getTotalQuantity()}件商品
+              </span>
             </div>
 
             {/* 购物车商品列表 */}
@@ -1102,18 +1102,20 @@ const OrderingPage: React.FC = () => {
       {/* 规格选择弹框 */}
       {showVariantModal && selectedMenuItem && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl max-w-6xl w-full mx-4 max-h-[90vh] flex shadow-2xl">
+          <div className="bg-white rounded-2xl max-w-6xl w-full mx-4 max-h-[90vh] flex shadow-2xl relative">
+            {/* 右上角关闭按钮 */}
+            <button
+              onClick={() => setShowVariantModal(false)}
+              className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
+
             {/* 左侧规格选择区域 */}
             <div className="flex-1 flex flex-col">
               {/* 弹框头部 */}
-              <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <div className="p-6 border-b border-gray-200 pr-16">
                 <h2 className="text-xl font-bold text-gray-800">套餐规格选择</h2>
-                <button
-                  onClick={() => setShowVariantModal(false)}
-                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
-                >
-                  <X className="w-5 h-5 text-gray-500" />
-                </button>
               </div>
 
               {/* 规格选择区域 */}
